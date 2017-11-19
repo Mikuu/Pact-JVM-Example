@@ -1,0 +1,2 @@
+include "pact-jvm-example-consumer", "pact-jvm-example-provider"
+
