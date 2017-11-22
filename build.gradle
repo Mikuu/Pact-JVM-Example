@@ -52,6 +52,28 @@ project(':pact-jvm-example-provider') {
         baseName = 'pact-jvm-example-provider'
         version =  '1.0.0'
     }
+
+    pact {
+        serviceProviders {
+            pactJVMExampleProvider {
+                protocol = 'http'
+                host = 'localhost'
+                port = 8080
+                path = '/'
+
+                hasPactWith('pactJVMExampleConsumer') {
+                    pactFile = file('../Pacts/PactJVMExampleConsumer-PactJVMExampleProvider.json')
+                }
+            }
+        }
+
+        reports {
+            defaultReports()
+            markdown
+            json
+        }
+    }
+
 }
 
 

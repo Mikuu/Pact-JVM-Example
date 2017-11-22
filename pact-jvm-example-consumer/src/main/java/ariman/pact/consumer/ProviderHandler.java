@@ -3,18 +3,18 @@ package ariman.pact.consumer;
 import org.springframework.web.client.RestTemplate;
 
 public class ProviderHandler {
-    String backendURLBase = "http://localhost:8080";
 
-    public String getBackendURLBase() {
-        return backendURLBase;
-    }
-
-    public void setBackendURLBase(String backendURLBase) {
-        this.backendURLBase = backendURLBase;
-    }
+    private String backendURL = "http://localhost:8080/information?name=Miku";
 
     public String getBackendURL() {
-        return this.getBackendURLBase()+"/information?name=Miku";
+        return this.backendURL;
+    }
+
+    public void setBackendURL(String URLBase) {
+        this.backendURL = URLBase+"/information?name=Miku";
+    }
+    public void setBackendURL(String URLBase, String name) {
+        this.backendURL = URLBase+"/information?name="+name;
     }
 
     public Information getInformation() {

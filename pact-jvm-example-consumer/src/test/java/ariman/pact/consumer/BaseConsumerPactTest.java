@@ -12,10 +12,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class PactTest extends ConsumerPactTestMk2 {
+public class BaseConsumerPactTest extends ConsumerPactTestMk2 {
 
     @Override
-    @Pact(provider="PactJVMExampleProvider", consumer="PactJVMExampleConsumer")
+    @Pact(provider="PactJVMExampleProvider", consumer="PactJVMExampleConsumerBaseTest")
     public RequestResponsePact createPact(PactDslWithProvider builder) {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
@@ -48,13 +48,13 @@ public class PactTest extends ConsumerPactTestMk2 {
 
     @Override
     protected String consumerName() {
-        return "PactJVMExampleConsumer";
+        return "PactJVMExampleConsumerBaseTest";
     }
 
     @Override
     protected void runTest(MockServer mockServer) throws IOException {
         ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURLBase(mockServer.getUrl());
+        providerHandler.setBackendURL(mockServer.getUrl());
         Information information = providerHandler.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
     }
