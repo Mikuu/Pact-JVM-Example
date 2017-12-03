@@ -13,12 +13,12 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class JunitRuleMutipleInteractionsPactTest {
+public class JunitRuleMultipleInteractionsPactTest {
 
     @Rule
     public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("PactJVMExampleProvider",this);
 
-    @Pact(consumer="PactJVMExampleConsumerJunitRule")
+    @Pact(consumer="PactJVMExampleConsumerJunitRuleMultipleInteractions")
     public RequestResponsePact createPact(PactDslWithProvider builder) {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
