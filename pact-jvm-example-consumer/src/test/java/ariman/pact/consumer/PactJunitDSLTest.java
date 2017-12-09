@@ -5,7 +5,6 @@ import au.com.dius.pact.consumer.PactVerificationResult;
 import au.com.dius.pact.model.MockProviderConfig;
 import au.com.dius.pact.model.PactSpecVersion;
 import au.com.dius.pact.model.RequestResponsePact;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -14,17 +13,23 @@ import java.util.Map;
 import static au.com.dius.pact.consumer.ConsumerPactRunnerKt.runConsumerTest;
 import static org.junit.Assert.assertEquals;
 
-public class JunitDSLPactTest {
-    PactSpecVersion pactSpecVersion;
+public class PactJunitDSLTest {
+
+    private void checkResult(PactVerificationResult result) {
+        if (result instanceof PactVerificationResult.Error) {
+            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+        }
+        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+    }
 
     @Test
-    public void testPact() {
+    public void testPact1() {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("PactJVMExampleConsumerJunitDSL")
-            .hasPactWith("PactJVMExampleProvider")
+            .consumer("JunitDSLConsumer1")
+            .hasPactWith("ExampleProvider")
             .given("Test state")
             .uponReceiving("Query name is Miku")
                 .path("/information")
@@ -41,6 +46,27 @@ public class JunitDSLPactTest {
                         "        \"Phone Number\": \"9090950\"\n" +
                         "    }\n" +
                         "}")
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault();
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl(), "Miku");
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Hatsune Miku");
+        });
+
+        checkResult(result);
+    }
+
+    @Test
+    public void testPact2() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("JunitDSLConsumer2")
+            .hasPactWith("ExampleProvider")
             .uponReceiving("Query name is Nanoha")
                 .path("/information")
                 .query("name=Nanoha")
@@ -53,25 +79,18 @@ public class JunitDSLPactTest {
                         "    \"name\": \"Nanoha\",\n" +
                         "    \"contact\": null\n" +
                         "}")
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V2);
+        MockProviderConfig config = MockProviderConfig.createDefault();
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
             ProviderHandler providerHandler = new ProviderHandler();
             providerHandler.setBackendURL(mockServer.getUrl(), "Nanoha");
+
             Information information = providerHandler.getInformation();
             assertEquals(information.getName(), "Nanoha");
-
-            providerHandler.setBackendURL(mockServer.getUrl());
-            information = providerHandler.getInformation();
-            assertEquals(information.getName(), "Hatsune Miku");
         });
 
-        if (result instanceof PactVerificationResult.Error) {
-            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
-        }
-
-        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        checkResult(result);
     }
 
 }

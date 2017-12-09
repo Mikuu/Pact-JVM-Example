@@ -1,10 +1,10 @@
 package ariman.pact.consumer;
 
-import au.com.dius.pact.consumer.*;
+import au.com.dius.pact.consumer.ConsumerPactTestMk2;
+import au.com.dius.pact.consumer.MockServer;
+import au.com.dius.pact.consumer.Pact;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
-import org.junit.Rule;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,12 +12,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class JunitRulePactTest {
+public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
 
-    @Rule
-    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("PactJVMExampleProvider",this);
-
-    @Pact(consumer="PactJVMExampleConsumerJunitRule")
+    @Override
+    @Pact(provider="ExampleProvider", consumer="BaseConsumer")
     public RequestResponsePact createPact(PactDslWithProvider builder) {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
@@ -39,14 +37,24 @@ public class JunitRulePactTest {
                         "        \"Phone Number\": \"9090950\"\n" +
                         "    }\n" +
                         "}")
+
                 .toPact();
     }
 
-    @Test
-    @PactVerification
-    public void runTest() {
+    @Override
+    protected String providerName() {
+        return "ExampleProvider";
+    }
+
+    @Override
+    protected String consumerName() {
+        return "BaseConsumer";
+    }
+
+    @Override
+    protected void runTest(MockServer mockServer) throws IOException {
         ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURL(mockProvider.getUrl());
+        providerHandler.setBackendURL(mockServer.getUrl());
         Information information = providerHandler.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
     }
