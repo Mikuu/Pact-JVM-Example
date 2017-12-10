@@ -8,7 +8,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE")
         classpath("org.thymeleaf:thymeleaf:3.0.8.RELEASE")
-        classpath("au.com.dius:pact-jvm-provider-gradle_2.10:2.4.19")
+        classpath("au.com.dius:pact-jvm-provider-gradle_2.12:3.5.10")
     }
 }
 
@@ -44,6 +44,10 @@ project(':pact-jvm-example-consumer') {
         baseName = 'pact-jvm-example-consumer'
         version =  '1.0.0'
     }
+
+    test {
+        systemProperties['pact.rootDir'] = "$rootDir/Pacts"
+    }
 }
 
 project(':pact-jvm-example-provider') {
@@ -56,23 +60,27 @@ project(':pact-jvm-example-provider') {
 
     pact {
         serviceProviders {
-            pactJVMExampleProvider {
+            ExampleProvider {
                 protocol = 'http'
                 host = 'localhost'
                 port = 8080
                 path = '/'
 
-                hasPactWith('pactJVMExampleConsumer') {
-                    pactFile = file('../Pacts/PactJVMExampleConsumer-PactJVMExampleProvider.json')
+                hasPactWith('BaseConsumer') {
+                    pactSource = file("$rootDir/Pacts/BaseConsumer-ExampleProvider.json")
+                }
+
+                hasPactsWith('AllConsumers') {
+                    pactFileLocation = file("$rootDir/Pacts")
                 }
             }
         }
 
-        reports {
-            defaultReports()
-            markdown
-            json
-        }
+//        reports {
+//            defaultReports()
+//            markdown
+//            json
+//        }
     }
 
 }
