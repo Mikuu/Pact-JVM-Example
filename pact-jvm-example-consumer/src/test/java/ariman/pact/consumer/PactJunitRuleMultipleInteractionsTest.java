@@ -24,7 +24,7 @@ public class PactJunitRuleMultipleInteractionsTest {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         return builder
-                .given("State Miku")
+                .given("Junit Rule State")
                 .uponReceiving("Miku")
                 .path("/information")
                 .query("name=Miku")
@@ -40,7 +40,7 @@ public class PactJunitRuleMultipleInteractionsTest {
                         "        \"Phone Number\": \"9090950\"\n" +
                         "    }\n" +
                         "}")
-                .given("State Nanoha")
+                .given("Junit Rule State")
                 .uponReceiving("Nanoha")
                 .path("/information")
                 .query("name=Nanoha")

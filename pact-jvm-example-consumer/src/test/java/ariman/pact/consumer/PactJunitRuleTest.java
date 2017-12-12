@@ -23,7 +23,7 @@ public class PactJunitRuleTest {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         return builder
-                .given("")
+                .given("Junit Rule State")
                 .uponReceiving("Pact JVM example Pact interaction")
                 .path("/information")
                 .query("name=Miku")

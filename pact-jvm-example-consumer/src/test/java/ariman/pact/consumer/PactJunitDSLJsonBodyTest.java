@@ -42,7 +42,7 @@ public class PactJunitDSLJsonBodyTest {
         RequestResponsePact pact = ConsumerPactBuilder
             .consumer("JunitDSLJsonBodyConsumer")
             .hasPactWith("ExampleProvider")
-            .given("Test state")
+            .given("Junit DSL State")
             .uponReceiving("Query name is Miku")
                 .path("/information")
                 .query("name=Miku")
@@ -80,7 +80,7 @@ public class PactJunitDSLJsonBodyTest {
         RequestResponsePact pact = ConsumerPactBuilder
             .consumer("JunitDSLLambdaJsonBodyConsumer")
             .hasPactWith("ExampleProvider")
-            .given("Test state")
+            .given("Junit DSL State")
             .uponReceiving("Query name is Miku")
                 .path("/information")
                 .query("name=Miku")

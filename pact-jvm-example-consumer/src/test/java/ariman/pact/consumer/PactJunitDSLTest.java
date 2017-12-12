@@ -30,7 +30,7 @@ public class PactJunitDSLTest {
         RequestResponsePact pact = ConsumerPactBuilder
             .consumer("JunitDSLConsumer1")
             .hasPactWith("ExampleProvider")
-            .given("Test state")
+            .given("Junit DSL State")
             .uponReceiving("Query name is Miku")
                 .path("/information")
                 .query("name=Miku")
@@ -67,6 +67,7 @@ public class PactJunitDSLTest {
         RequestResponsePact pact = ConsumerPactBuilder
             .consumer("JunitDSLConsumer2")
             .hasPactWith("ExampleProvider")
+            .given("Junit DSL State")
             .uponReceiving("Query name is Nanoha")
                 .path("/information")
                 .query("name=Nanoha")

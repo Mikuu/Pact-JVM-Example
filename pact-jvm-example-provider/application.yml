@@ -1,0 +1,11 @@
+---
+server:
+  address: localhost
+  port: 8080
+---
+spring:
+  profiles: default
+---
+spring:
+  profiles: pact
+
