@@ -32,6 +32,7 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
                         "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
                         "        \"Phone Number\": \"9090950\"\n" +

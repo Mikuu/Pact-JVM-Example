@@ -1,11 +1,14 @@
 package provider;
 
+import provider.ulti.Nationality;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Information {
     private Integer salary;
     private String name;
+    private String nationality;
     private Map<String, String> contact = new HashMap<String, String>();
 
     public Integer getSalary() {
@@ -32,5 +35,11 @@ public class Information {
         this.contact = contact;
     }
 
+    public String getNationality() {
+        return nationality;
+    }
 
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
 }

@@ -41,6 +41,7 @@ public class PactJunitDSLTest {
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
                         "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
                         "        \"Phone Number\": \"9090950\"\n" +
@@ -76,9 +77,13 @@ public class PactJunitDSLTest {
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
-                        "    \"salary\": 0,\n" +
-                        "    \"name\": \"Nanoha\",\n" +
-                        "    \"contact\": null\n" +
+                        "    \"salary\": 80000,\n" +
+                        "    \"name\": \"Takamachi Nanoha\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090940\"\n" +
+                        "    }\n" +
                         "}")
                 .toPact();
 
@@ -88,7 +93,7 @@ public class PactJunitDSLTest {
             providerHandler.setBackendURL(mockServer.getUrl(), "Nanoha");
 
             Information information = providerHandler.getInformation();
-            assertEquals(information.getName(), "Nanoha");
+            assertEquals(information.getName(), "Takamachi Nanoha");
         });
 
         checkResult(result);
