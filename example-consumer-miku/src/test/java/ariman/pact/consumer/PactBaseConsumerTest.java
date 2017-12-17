@@ -21,7 +21,7 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         return builder
-                .given("Base State")
+                .given("")
                 .uponReceiving("Pact JVM example Pact interaction")
                 .path("/information")
                 .query("name=Miku")

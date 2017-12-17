@@ -1,0 +1,136 @@
+{
+    "provider": {
+        "name": "ExampleProvider"
+    },
+    "consumer": {
+        "name": "JunitRuleMultipleInteractionsConsumer"
+    },
+    "interactions": [
+        {
+            "description": "Miku",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Miku"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 45000,
+                    "name": "Hatsune Miku",
+                    "contact": {
+                        "Email": "hatsune.miku@ariman.com",
+                        "Phone Number": "9090950"
+                    }
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "Junit Rule State"
+                }
+            ]
+        },
+        {
+            "description": "Nanoha",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Nanoha"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 0,
+                    "name": "Nanoha",
+                    "contact": null
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "Junit Rule State"
+                }
+            ]
+        },
+        {
+            "description": "Miku",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Miku"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 45000,
+                    "name": "Hatsune Miku",
+                    "contact": {
+                        "Email": "hatsune.miku@ariman.com",
+                        "Phone Number": "9090950"
+                    }
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "State Miku"
+                }
+            ]
+        },
+        {
+            "description": "Nanoha",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Nanoha"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 0,
+                    "name": "Nanoha",
+                    "contact": null
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "State Nanoha"
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "pact-specification": {
+            "version": "3.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.5.9"
+        }
+    }
+}

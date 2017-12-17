@@ -1,0 +1,49 @@
+{
+    "provider": {
+        "name": "ExampleProvider"
+    },
+    "consumer": {
+        "name": "BaseConsumer"
+    },
+    "interactions": [
+        {
+            "description": "Pact JVM example Pact interaction",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Miku"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 45000,
+                    "name": "Hatsune Miku",
+                    "contact": {
+                        "Email": "hatsune.miku@ariman.com",
+                        "Phone Number": "9090950"
+                    }
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "Base State"
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "pact-specification": {
+            "version": "3.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.5.9"
+        }
+    }
+}

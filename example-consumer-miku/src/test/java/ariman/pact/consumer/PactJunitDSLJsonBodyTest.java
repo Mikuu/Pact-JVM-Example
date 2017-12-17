@@ -2,6 +2,8 @@ package ariman.pact.consumer;
 
 import au.com.dius.pact.consumer.ConsumerPactBuilder;
 import au.com.dius.pact.consumer.PactVerificationResult;
+import au.com.dius.pact.consumer.dsl.DslPart;
+import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.model.MockProviderConfig;
 import au.com.dius.pact.model.PactSpecVersion;
 import au.com.dius.pact.model.RequestResponsePact;
@@ -12,8 +14,10 @@ import java.util.Map;
 
 import static au.com.dius.pact.consumer.ConsumerPactRunnerKt.runConsumerTest;
 import static org.junit.Assert.assertEquals;
+import static io.pactfoundation.consumer.dsl.LambdaDsl.*;
 
-public class PactJunitDSLTest {
+public class PactJunitDSLJsonBodyTest {
+    PactSpecVersion pactSpecVersion;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
@@ -23,14 +27,23 @@ public class PactJunitDSLTest {
     }
 
     @Test
-    public void testPact1() {
+    public void testWithPactDSLJsonBody() {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
+        DslPart body = new PactDslJsonBody()
+                .numberType("salary", 45000)
+                .stringType("name", "Hatsune Miku")
+                .stringType("nationality", "Japan")
+                .object("contact")
+                .stringValue("Email", "hatsune.miku@ariman.com")
+                .stringValue("Phone Number", "9090950")
+                .closeObject();
+
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLConsumer1")
+            .consumer("JunitDSLJsonBodyConsumer")
             .hasPactWith("ExampleProvider")
-            .given("Junit DSL State")
+            .given("")
             .uponReceiving("Query name is Miku")
                 .path("/information")
                 .query("name=Miku")
@@ -38,62 +51,54 @@ public class PactJunitDSLTest {
             .willRespondWith()
                 .headers(headers)
                 .status(200)
-                .body("{\n" +
-                        "    \"salary\": 45000,\n" +
-                        "    \"name\": \"Hatsune Miku\",\n" +
-                        "    \"nationality\": \"Japan\",\n" +
-                        "    \"contact\": {\n" +
-                        "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
-                        "        \"Phone Number\": \"9090950\"\n" +
-                        "    }\n" +
-                        "}")
+                .body(body)
             .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault();
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
             ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl(), "Miku");
+            providerHandler.setBackendURL(mockServer.getUrl());
             Information information = providerHandler.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
         });
 
         checkResult(result);
     }
-
     @Test
-    public void testPact2() {
+    public void testWithLambdaDSLJsonBody() {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
+        DslPart body = newJsonBody((root) -> {
+            root.numberValue("salary", 45000);
+            root.stringValue("name", "Hatsune Miku");
+            root.stringValue("nationality", "Japan");
+            root.object("contact", (contactObject) -> {
+                contactObject.stringMatcher("Email", ".*@ariman.com", "hatsune.miku@ariman.com");
+                contactObject.stringType("Phone Number", "9090950");
+            });
+        }).build();
+
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLConsumer2")
+            .consumer("JunitDSLLambdaJsonBodyConsumer")
             .hasPactWith("ExampleProvider")
-            .given("Junit DSL State")
-            .uponReceiving("Query name is Nanoha")
+            .given("")
+            .uponReceiving("Query name is Miku")
                 .path("/information")
-                .query("name=Nanoha")
+                .query("name=Miku")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
                 .status(200)
-                .body("{\n" +
-                        "    \"salary\": 80000,\n" +
-                        "    \"name\": \"Takamachi Nanoha\",\n" +
-                        "    \"nationality\": \"Japan\",\n" +
-                        "    \"contact\": {\n" +
-                        "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
-                        "        \"Phone Number\": \"9090940\"\n" +
-                        "    }\n" +
-                        "}")
-                .toPact();
+                .body(body)
+            .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault();
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
             ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl(), "Nanoha");
-
+            providerHandler.setBackendURL(mockServer.getUrl());
             Information information = providerHandler.getInformation();
-            assertEquals(information.getName(), "Takamachi Nanoha");
+            assertEquals(information.getName(), "Hatsune Miku");
         });
 
         checkResult(result);

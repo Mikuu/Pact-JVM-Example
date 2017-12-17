@@ -1,0 +1,122 @@
+{
+    "provider": {
+        "name": "ExampleProvider"
+    },
+    "consumer": {
+        "name": "JunitDSLLambdaJsonBodyConsumer"
+    },
+    "interactions": [
+        {
+            "description": "Query name is Miku",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Miku"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "contact": {
+                        "Email": "hatsune.miku@ariman.com",
+                        "Phone Number": "9090950"
+                    },
+                    "name": "Hatsune Miku",
+                    "salary": 45000
+                },
+                "matchingRules": {
+                    "body": {
+                        "$.contact.Email": {
+                            "matchers": [
+                                {
+                                    "match": "regex",
+                                    "regex": ".*@ariman.com"
+                                }
+                            ],
+                            "combine": "AND"
+                        },
+                        "$.contact['Phone Number']": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        }
+                    }
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "Junit DSL State"
+                }
+            ]
+        },
+        {
+            "description": "Query name is Miku",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": {
+                    "name": [
+                        "Miku"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "contact": {
+                        "Email": "hatsune.miku@ariman.com",
+                        "Phone Number": "9090950"
+                    },
+                    "name": "Hatsune Miku",
+                    "salary": 45000
+                },
+                "matchingRules": {
+                    "body": {
+                        "$.contact.Email": {
+                            "matchers": [
+                                {
+                                    "match": "regex",
+                                    "regex": ".*@ariman.com"
+                                }
+                            ],
+                            "combine": "AND"
+                        },
+                        "$.contact['Phone Number']": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        }
+                    }
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "Test state"
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "pact-specification": {
+            "version": "3.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.5.9"
+        }
+    }
+}

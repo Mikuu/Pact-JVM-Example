@@ -1,6 +1,3 @@
-group 'ariman'
-version '1.0-SNAPSHOT'
-
 buildscript {
     repositories {
         mavenCentral()
@@ -39,22 +36,36 @@ subprojects {
 
 }
 
-project(':pact-jvm-example-consumer') {
+project(':example-consumer-miku') {
     jar {
-        baseName = 'pact-jvm-example-consumer'
+        baseName = 'example-consumer-miku'
         version =  '1.0.0'
     }
 
     test {
-        systemProperties['pact.rootDir'] = "$rootDir/Pacts"
+        systemProperties['pact.rootDir'] = "$rootDir/Pacts/Miku"
     }
 }
 
-project(':pact-jvm-example-provider') {
+
+project(':example-consumer-nanoha') {
+    jar {
+        baseName = 'example-consumer-nanoha'
+        version =  '1.0.0'
+    }
+
+    test {
+        systemProperties['pact.rootDir'] = "$rootDir/Pacts/Nanoha"
+    }
+}
+
+import java.net.URL
+
+project(':example-provider') {
     apply plugin: 'au.com.dius.pact'
 
     jar {
-        baseName = 'pact-jvm-example-provider'
+        baseName = 'example-provider'
         version =  '1.0.0'
     }
 
@@ -66,12 +77,21 @@ project(':pact-jvm-example-provider') {
                 port = 8080
                 path = '/'
 
-                hasPactWith('BaseConsumer') {
-                    pactSource = file("$rootDir/Pacts/BaseConsumer-ExampleProvider.json")
+                hasPactWith('Miku - Base contract') {
+                    pactSource = file("$rootDir/Pacts/Miku/BaseConsumer-ExampleProvider.json")
                 }
 
-                hasPactsWith('AllConsumers') {
-                    pactFileLocation = file("$rootDir/Pacts")
+                hasPactsWith('Miku - All contracts') {
+                    pactFileLocation = file("$rootDir/Pacts/Miku")
+                }
+
+                hasPactWith('Nanoha - With Nantionality') {
+                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
+                }
+
+                hasPactWith('Nanoha - No Nantionality') {
+                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
+                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
                 }
             }
         }

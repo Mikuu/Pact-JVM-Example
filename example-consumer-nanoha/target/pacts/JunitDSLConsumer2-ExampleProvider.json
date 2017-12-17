@@ -1,0 +1,57 @@
+{
+    "provider": {
+        "name": "ExampleProvider"
+    },
+    "consumer": {
+        "name": "JunitDSLConsumer2"
+    },
+    "interactions": [
+        {
+            "description": "Query name is Nanoha",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": "name=Nanoha"
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 0,
+                    "name": "Nanoha",
+                    "contact": null
+                }
+            },
+            "providerState": "Junit DSL State"
+        },
+        {
+            "description": "Query name is Nanoha",
+            "request": {
+                "method": "GET",
+                "path": "/information",
+                "query": "name=Nanoha"
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json;charset=UTF-8"
+                },
+                "body": {
+                    "salary": 0,
+                    "name": "Nanoha",
+                    "contact": null
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "pact-specification": {
+            "version": "2.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.5.9"
+        }
+    }
+}

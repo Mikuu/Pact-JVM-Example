@@ -1,2 +1,2 @@
-include "pact-jvm-example-consumer", "pact-jvm-example-provider"
+include "example-consumer-miku", "example-consumer-nanoha", "example-provider"
 

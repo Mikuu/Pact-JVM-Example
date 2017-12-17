@@ -16,7 +16,7 @@ import static au.com.dius.pact.consumer.ConsumerPactRunnerKt.runConsumerTest;
 import static org.junit.Assert.assertEquals;
 import static io.pactfoundation.consumer.dsl.LambdaDsl.*;
 
-public class PactJunitDSLJsonBodyTest {
+public class NationalityPactTest {
     PactSpecVersion pactSpecVersion;
 
     private void checkResult(PactVerificationResult result) {
@@ -27,65 +27,27 @@ public class PactJunitDSLJsonBodyTest {
     }
 
     @Test
-    public void testWithPactDSLJsonBody() {
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", "application/json;charset=UTF-8");
-
-        DslPart body = new PactDslJsonBody()
-                .numberType("salary", 45000)
-                .stringType("name", "Hatsune Miku")
-                .stringType("nationality", "Japan")
-                .object("contact")
-                .stringValue("Email", "hatsune.miku@ariman.com")
-                .stringValue("Phone Number", "9090950")
-                .closeObject();
-
-        RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLJsonBodyConsumer")
-            .hasPactWith("ExampleProvider")
-            .given("Junit DSL State")
-            .uponReceiving("Query name is Miku")
-                .path("/information")
-                .query("name=Miku")
-                .method("GET")
-            .willRespondWith()
-                .headers(headers)
-                .status(200)
-                .body(body)
-            .toPact();
-
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
-            assertEquals(information.getName(), "Hatsune Miku");
-        });
-
-        checkResult(result);
-    }
-    @Test
-    public void testWithLambdaDSLJsonBody() {
+    public void testWithNationality() {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         DslPart body = newJsonBody((root) -> {
-            root.numberValue("salary", 45000);
-            root.stringValue("name", "Hatsune Miku");
+            root.numberType("salary");
+            root.stringValue("name", "Takamachi Nanoha");
             root.stringValue("nationality", "Japan");
             root.object("contact", (contactObject) -> {
-                contactObject.stringMatcher("Email", ".*@ariman.com", "hatsune.miku@ariman.com");
-                contactObject.stringType("Phone Number", "9090950");
+                contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
+                contactObject.stringType("Phone Number", "9090940");
             });
         }).build();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLLambdaJsonBodyConsumer")
+            .consumer("ConsumerNanohaWithNationality")
             .hasPactWith("ExampleProvider")
-            .given("Junit DSL State")
-            .uponReceiving("Query name is Miku")
+            .given("")
+            .uponReceiving("Query name is Nanoha")
                 .path("/information")
-                .query("name=Miku")
+                .query("name=Nanoha")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
@@ -98,7 +60,49 @@ public class PactJunitDSLJsonBodyTest {
             ProviderHandler providerHandler = new ProviderHandler();
             providerHandler.setBackendURL(mockServer.getUrl());
             Information information = providerHandler.getInformation();
-            assertEquals(information.getName(), "Hatsune Miku");
+            assertEquals(information.getName(), "Takamachi Nanoha");
+            assertEquals(information.getNationality(), "Japan");
+        });
+
+        checkResult(result);
+    }
+
+    @Test
+    public void testNoNationality() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        DslPart body = newJsonBody((root) -> {
+            root.numberType("salary");
+            root.stringValue("name", "Takamachi Nanoha");
+            root.stringValue("nationality", null);
+            root.object("contact", (contactObject) -> {
+                contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
+                contactObject.stringType("Phone Number", "9090940");
+            });
+        }).build();
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("ConsumerNanohaNoNationality")
+            .hasPactWith("ExampleProvider")
+            .given("No nationality")
+            .uponReceiving("Query name is Nanoha")
+                .path("/information")
+                .query("name=Nanoha")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body(body)
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl());
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Takamachi Nanoha");
+            assertEquals(information.getNationality(), null);
         });
 
         checkResult(result);
