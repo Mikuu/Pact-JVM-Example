@@ -14,4 +14,4 @@ which uses Junit in Consumer side and Gradle task in Provider side, it will cove
 
 ## Contract Test between Provider and Consumer Miku
 
-## Contract Test between Consumer Nanoha
+## Contract Test between Provider and Consumer Nanoha
