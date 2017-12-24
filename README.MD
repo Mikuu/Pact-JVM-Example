@@ -22,9 +22,6 @@ and calling http://localhost:8080/information?name=Nanoha will get:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.nanoha.png)
 
-
-
-
 ### Example Consumer Miku
 This is first example consumer we called [Miku](https://en.wikipedia.org/wiki/Hatsune_Miku), to start it:
 
@@ -34,6 +31,8 @@ then visit http://localhost:8081/miku in your browser, you can get this:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/consumer.miku.png)
 
+compare with Provider's payload and the information on the web page, you can find that the attributes `salary` and 
+`nationality` are not used by Miku.
 
 ### Example Consumer Nanoha
 This is the second example consumer we called [Nanoha](http://nanoha.wikia.com/wiki/Nanoha_Takamachi), to start it:
@@ -44,7 +43,8 @@ then visit http://localhost:8082/nanoha in your browser, you can get this:
 
 ![image](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/consumer.nanoha.png)
 
-
+similar to Miku, Nanoha does not use the attribute `salary` neither but uses attribute `nationality`, so this 
+is a little difference between the two consumers when consuming the response from the Provider's same endpoint.  
 
 
 ## Contract Test between Provider and Consumer Miku
