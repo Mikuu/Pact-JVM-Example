@@ -13,10 +13,16 @@ Clone the codes to your local, then you can find:
 
 ### Example Provider
 This is an API backend service which serves at http://localhost:8080/information, consumers
-can retrieve some person information by calling this endpoint with a **query** parameter,
-just like below:
+can retrieve some person information by calling this endpoint with a query parameter **name**,
+just like calling http://localhost:8080/information?name=Miku will get:
 
-![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.png)
+![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.miku.png)
+
+and calling http://localhost:8080/information?name=Nanoha will get:
+
+![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.nanoha.png)
+
+
 
 
 ### Example Consumer Miku
