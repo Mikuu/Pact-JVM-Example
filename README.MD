@@ -1,6 +1,6 @@
 # PACT JVM Example
 
-These codes provide an example about how to do Contract Test with PACT JVM, 
+These codes provide an example about how to do Contract Test with PACT JVM Junit, 
 which uses Junit in Consumer side and Gradle task in Provider side, it will cover:
 
 - Microservices examples created with Spring Boot.
@@ -53,14 +53,14 @@ is a little difference between the two consumers when consuming the response fro
 Now, it's time to look into the tests. 
 
 > This README will not go through all tests line by line, because 
-the tests themselves are very simple and straight forward, so I will only point some highlights for 
-each test.
+the tests themselves are very simple and straight forward, so I will only point out some highlights for 
+each test. For detailed explanation about the codes, please refer the official [document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
 
-By the time I created this example, PACT JVM provides mainly 3 ways to write the pact test file 
+By the time this example is created, PACT JVM Junit provides mainly 3 ways to write the pact test file 
 at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
 
 
-####Basic Junit
+#### Basic Junit
 `PactBaseConsumerTest.java`
 ```java
 public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
