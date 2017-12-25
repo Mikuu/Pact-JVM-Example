@@ -8,6 +8,7 @@ which uses Junit in Consumer side and Gradle task in Provider side, it will cove
 - Write Consumer tests in different ways including using Basic, Junit Rule and DSL method.
 - Example of utilizing Pact Broker.
 
+
 ## Understand The Example Applications
 Clone the codes to your local, then you can find:
 
@@ -48,5 +49,73 @@ is a little difference between the two consumers when consuming the response fro
 
 
 ## Contract Test between Provider and Consumer Miku
+
+Now, it's time to look into the tests. 
+
+> This README will not go through all tests line by line, because 
+the tests themselves are very simple and straight forward, so I will only point some highlights for 
+each test.
+
+By the time I created this example, PACT JVM provides mainly 3 ways to write the pact test file 
+at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
+
+
+####Basic Junit
+`PactBaseConsumerTest.java`
+```java
+public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
+
+    @Override
+    @Pact(provider="ExampleProvider", consumer="BaseConsumer")
+    public RequestResponsePact createPact(PactDslWithProvider builder) {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        return builder
+                .given("")
+                .uponReceiving("Pact JVM example Pact interaction")
+                .path("/information")
+                .query("name=Miku")
+                .method("GET")
+                .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\n" +
+                        "    \"salary\": 45000,\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090950\"\n" +
+                        "    }\n" +
+                        "}")
+
+                .toPact();
+    }
+
+    @Override
+    protected String providerName() {
+        return "ExampleProvider";
+    }
+
+    @Override
+    protected String consumerName() {
+        return "BaseConsumer";
+    }
+
+    @Override
+    protected void runTest(MockServer mockServer) throws IOException {
+        ProviderHandler providerHandler = new ProviderHandler();
+        providerHandler.setBackendURL(mockServer.getUrl());
+        Information information = providerHandler.getInformation();
+        assertEquals(information.getName(), "Hatsune Miku");
+    }
+}
+```
+The `ProviderHandler` is the same one used in consumer Miku, we just use it to do a self 
+integration test, the purpose for this is to check if consumer Miku can handle the mocked 
+response correctly, then ensure the Pact content created are just as we need.
+
+`mockServer.getUrl()` can return the mock server's url, which is to be used in our handler.
 
 ## Contract Test between Provider and Consumer Nanoha
