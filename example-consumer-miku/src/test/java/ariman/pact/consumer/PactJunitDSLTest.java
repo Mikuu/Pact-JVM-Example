@@ -98,5 +98,4 @@ public class PactJunitDSLTest {
 
         checkResult(result);
     }
-
 }

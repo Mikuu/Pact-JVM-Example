@@ -231,4 +231,194 @@ public class PactJunitRuleMultipleInteractionsTest {
 ```
 This case uses Junit Rule too, but with two interactions in one Pact file.
 
+#### Junit DSL
+`PactJunitDSLTest`
+```java
+public class PactJunitDSLTest {
+
+    private void checkResult(PactVerificationResult result) {
+        if (result instanceof PactVerificationResult.Error) {
+            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+        }
+        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+    }
+
+    @Test
+    public void testPact1() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("JunitDSLConsumer1")
+            .hasPactWith("ExampleProvider")
+            .given("")
+            .uponReceiving("Query name is Miku")
+                .path("/information")
+                .query("name=Miku")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\n" +
+                        "    \"salary\": 45000,\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090950\"\n" +
+                        "    }\n" +
+                        "}")
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault();
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl(), "Miku");
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Hatsune Miku");
+        });
+
+        checkResult(result);
+    }
+
+    @Test
+    public void testPact2() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("JunitDSLConsumer2")
+            .hasPactWith("ExampleProvider")
+            .given("")
+            .uponReceiving("Query name is Nanoha")
+                .path("/information")
+                .query("name=Nanoha")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\n" +
+                        "    \"salary\": 80000,\n" +
+                        "    \"name\": \"Takamachi Nanoha\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090940\"\n" +
+                        "    }\n" +
+                        "}")
+                .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault();
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl(), "Nanoha");
+
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Takamachi Nanoha");
+        });
+
+        checkResult(result);
+    }
+}
+```
+Comparing with Basic Junit and Junit Rule usage, the DSL provides the ability to create multiple Pact files 
+in one test class.
+
+`PactJunitDSLJsonBodyTest`
+```java
+public class PactJunitDSLJsonBodyTest {
+    PactSpecVersion pactSpecVersion;
+
+    private void checkResult(PactVerificationResult result) {
+        if (result instanceof PactVerificationResult.Error) {
+            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+        }
+        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+    }
+
+    @Test
+    public void testWithPactDSLJsonBody() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        DslPart body = new PactDslJsonBody()
+                .numberType("salary", 45000)
+                .stringType("name", "Hatsune Miku")
+                .stringType("nationality", "Japan")
+                .object("contact")
+                .stringValue("Email", "hatsune.miku@ariman.com")
+                .stringValue("Phone Number", "9090950")
+                .closeObject();
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("JunitDSLJsonBodyConsumer")
+            .hasPactWith("ExampleProvider")
+            .given("")
+            .uponReceiving("Query name is Miku")
+                .path("/information")
+                .query("name=Miku")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body(body)
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl());
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Hatsune Miku");
+        });
+
+        checkResult(result);
+    }
+    @Test
+    public void testWithLambdaDSLJsonBody() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        DslPart body = newJsonBody((root) -> {
+            root.numberValue("salary", 45000);
+            root.stringValue("name", "Hatsune Miku");
+            root.stringValue("nationality", "Japan");
+            root.object("contact", (contactObject) -> {
+                contactObject.stringMatcher("Email", ".*@ariman.com", "hatsune.miku@ariman.com");
+                contactObject.stringType("Phone Number", "9090950");
+            });
+        }).build();
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("JunitDSLLambdaJsonBodyConsumer")
+            .hasPactWith("ExampleProvider")
+            .given("")
+            .uponReceiving("Query name is Miku")
+                .path("/information")
+                .query("name=Miku")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body(body)
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl());
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Hatsune Miku");
+        });
+
+        checkResult(result);
+    }
+
+}
+```
+When use Json Body in DSL usage, we can control the test accuracy by defining whether we check the response 
+body's attributes by Value or by Type, or even with Regular Expression. Comparing with normal Json body, the 
+Lambda statements can avoid using `.close**()` methods to make the codes more clean. You can find more 
+description about it [here](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-java8).  
+
 ## Contract Test between Provider and Consumer Nanoha
