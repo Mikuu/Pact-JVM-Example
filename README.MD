@@ -56,7 +56,7 @@ Now, it's time to look into the tests.
 the tests themselves are very simple and straight forward, so I will only point out some highlights for 
 each test. For detailed explanation about the codes, please refer the official [document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
 
-By the time this example is created, PACT JVM Junit provides mainly 3 ways to write the pact test file 
+By the time this example is created, PACT JVM Junit provides 3 ways to write the pact test file 
 at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
 
 
@@ -114,8 +114,121 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
 ```
 The `ProviderHandler` is the same one used in consumer Miku, we just use it to do a self 
 integration test, the purpose for this is to check if consumer Miku can handle the mocked 
-response correctly, then ensure the Pact content created are just as we need.
+response correctly, then ensure the Pact content created are just as we need before we send 
+it to Provider.
 
 `mockServer.getUrl()` can return the mock server's url, which is to be used in our handler.
+
+#### Junit Rule
+`PactJunitRuleTest.java`
+```java
+public class PactJunitRuleTest {
+
+    @Rule
+    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
+
+    @Pact(consumer="JunitRuleConsumer")
+    public RequestResponsePact createPact(PactDslWithProvider builder) {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        return builder
+                .given("")
+                .uponReceiving("Pact JVM example Pact interaction")
+                .path("/information")
+                .query("name=Miku")
+                .method("GET")
+                .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\n" +
+                        "    \"salary\": 45000,\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090950\"\n" +
+                        "    }\n" +
+                        "}")
+                .toPact();
+    }
+
+    @Test
+    @PactVerification
+    public void runTest() {
+        ProviderHandler providerHandler = new ProviderHandler();
+        providerHandler.setBackendURL(mockProvider.getUrl());
+        Information information = providerHandler.getInformation();
+        assertEquals(information.getName(), "Hatsune Miku");
+    }
+}
+```
+This test uses Junit Rule which can simplify the writing of test cases comparing with the Basic Junit.
+
+`PactJunitRuleMultipleInteractionsTest.java`
+```java
+public class PactJunitRuleMultipleInteractionsTest {
+
+    @Rule
+    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
+
+    @Pact(consumer="JunitRuleMultipleInteractionsConsumer")
+    public RequestResponsePact createPact(PactDslWithProvider builder) {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        return builder
+                .given("")
+                .uponReceiving("Miku")
+                .path("/information")
+                .query("name=Miku")
+                .method("GET")
+                .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\n" +
+                        "    \"salary\": 45000,\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090950\"\n" +
+                        "    }\n" +
+                        "}")
+                .given("")
+                .uponReceiving("Nanoha")
+                .path("/information")
+                .query("name=Nanoha")
+                .method("GET")
+                .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body("{\n" +
+                        "    \"salary\": 80000,\n" +
+                        "    \"name\": \"Takamachi Nanoha\",\n" +
+                        "    \"nationality\": \"Japan\",\n" +
+                        "    \"contact\": {\n" +
+                        "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
+                        "        \"Phone Number\": \"9090940\"\n" +
+                        "    }\n" +
+                        "}")
+                .toPact();
+    }
+
+    @Test
+    @PactVerification()
+    public void runTest() {
+        ProviderHandler providerHandler = new ProviderHandler();
+        providerHandler.setBackendURL(mockProvider.getUrl());
+        Information information = providerHandler.getInformation();
+        assertEquals(information.getName(), "Hatsune Miku");
+
+        providerHandler.setBackendURL(mockProvider.getUrl(), "Nanoha");
+        information = providerHandler.getInformation();
+        assertEquals(information.getName(), "Takamachi Nanoha");
+    }
+}
+```
+This case uses Junit Rule too, but with two interactions in one Pact file.
 
 ## Contract Test between Provider and Consumer Nanoha
