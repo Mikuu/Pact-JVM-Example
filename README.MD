@@ -56,6 +56,8 @@ Now, it's time to look into the tests.
 the tests themselves are very simple and straight forward, so I will only point out some highlights for 
 each test. For detailed explanation about the codes, please refer the official [document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
 
+### Create Test Cases
+
 By the time this example is created, PACT JVM Junit provides 3 ways to write the pact test file 
 at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
 
@@ -420,5 +422,11 @@ When use Json Body in DSL usage, we can control the test accuracy by defining wh
 body's attributes by Value or by Type, or even with Regular Expression. Comparing with normal Json body, the 
 Lambda statements can avoid using `.close**()` methods to make the codes more clean. You can find more 
 description about it [here](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-java8).  
+
+### Run The Tests
+Because we are using Junit, so to run the tests and create Pact files are very simple, just as what we always 
+run our usual Unit Test:
+
+`./gradlew :example-consumer-miku:test`
 
 ## Contract Test between Provider and Consumer Nanoha
