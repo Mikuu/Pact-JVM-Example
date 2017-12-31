@@ -423,10 +423,20 @@ body's attributes by Value or by Type, or even with Regular Expression. Comparin
 Lambda statements can avoid using `.close**()` methods to make the codes more clean. You can find more 
 description about it [here](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-java8).  
 
-### Run The Tests
-Because we are using Junit, so to run the tests and create Pact files are very simple, just as what we always 
+### Run the Tests at Consumer Miku side
+Because we are using Junit, so to run the tests and create Pact files are very easy, just as what we always 
 run our usual Unit Test:
 
 `./gradlew :example-consumer-miku:test`
+
+After that, you can find 7 JSON files created in folder `Pacts\Miku`. These are the Pacts which contain the 
+contract between Miku and Provider, and these Pacts will be used to drive the Contract Test later at Provider 
+side.
+
+### Run the Contract Test at Provider side
+We are using the Pact Gradle task in Provider side to run the Contract Test, which can be very easy without 
+writing any code:
+
+`` 
 
 ## Contract Test between Provider and Consumer Nanoha
