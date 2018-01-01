@@ -85,22 +85,16 @@ project(':example-provider') {
                     pactFileLocation = file("$rootDir/Pacts/Miku")
                 }
 
-                hasPactWith('Nanoha - With Nantionality') {
-                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
-                }
+//                hasPactWith('Nanoha - With Nantionality') {
+//                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
+//                }
 
-                hasPactWith('Nanoha - No Nantionality') {
-                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
-                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
-                }
+//                hasPactWith('Nanoha - No Nantionality') {
+//                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
+//                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
+//                }
             }
         }
-
-//        reports {
-//            defaultReports()
-//            markdown
-//            json
-//        }
     }
 
 }

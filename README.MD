@@ -435,8 +435,41 @@ side.
 
 ### Run the Contract Test at Provider side
 We are using the Pact Gradle task in Provider side to run the Contract Test, which can be very easy without 
-writing any code:
+writing any code, just execute the `pactVerify` task. **Before we run the test, make sure the Provider API is already stared and running at our localhost.**
 
-`` 
+Then we can run the test as:
+
+`./gradlew :example-provider:pactVerify`
+
+and you can find the test results at the command line, would be something likes:
+
+```commandline
+Arimans-MacBook-Pro:pact-jvm-example ariman$ ./gradlew :example-provider:pactVerify                                          
+
+> Task :example-provider:pactVerify_ExampleProvider 
+
+Verifying a pact between Miku - Base contract and ExampleProvider
+  [Using File /Users/ariman/Workspace/Pacting/pact-jvm-example/Pacts/Miku/BaseConsumer-ExampleProvider.json]
+  Given 
+         WARNING: State Change ignored as there is no stateChange URL
+  Consumer Miku
+    returns a response which
+      has status code 200 (OK)
+      includes headers
+        "Content-Type" with value "application/json;charset=UTF-8" (OK)
+      has a matching body (OK)
+  Given 
+         WARNING: State Change ignored as there is no stateChange URL
+  Pact JVM example Pact interaction
+    returns a response which
+      has status code 200 (OK)
+      includes headers
+        "Content-Type" with value "application/json;charset=UTF-8" (OK)
+      has a matching body (OK)
+```
+
+### Gradle Configuration
+
+Before we continue to 
 
 ## Contract Test between Provider and Consumer Nanoha
