@@ -435,7 +435,7 @@ side.
 
 ### Run the Contract Test at Provider side
 We are using the Pact Gradle task in Provider side to run the Contract Test, which can be very easy without 
-writing any code, just execute the `pactVerify` task. **Before we run the test, make sure the Provider API is already stared and running at our localhost.**
+writing any code, just execute the `pactVerify` task. **Before we run the test, make sure the Provider API is already started and running at our localhost.**
 
 Then we can run the test as:
 
@@ -470,6 +470,81 @@ Verifying a pact between Miku - Base contract and ExampleProvider
 
 ### Gradle Configuration
 
-Before we continue to 
+Before we continue to Consumer Nanoha, let's look at the Gradle Configuration first:
+
+```groovy
+project(':example-consumer-miku') {
+    jar {
+        baseName = 'example-consumer-miku'
+        version =  '1.0.0'
+    }
+
+    test {
+        systemProperties['pact.rootDir'] = "$rootDir/Pacts/Miku"
+    }
+}
+
+
+project(':example-consumer-nanoha') {
+    jar {
+        baseName = 'example-consumer-nanoha'
+        version =  '1.0.0'
+    }
+
+    test {
+        systemProperties['pact.rootDir'] = "$rootDir/Pacts/Nanoha"
+    }
+}
+
+import java.net.URL
+
+project(':example-provider') {
+    apply plugin: 'au.com.dius.pact'
+
+    jar {
+        baseName = 'example-provider'
+        version =  '1.0.0'
+    }
+
+    pact {
+        serviceProviders {
+            ExampleProvider {
+                protocol = 'http'
+                host = 'localhost'
+                port = 8080
+                path = '/'
+
+                hasPactWith('Miku - Base contract') {
+                    pactSource = file("$rootDir/Pacts/Miku/BaseConsumer-ExampleProvider.json")
+                }
+
+                hasPactsWith('Miku - All contracts') {
+                    pactFileLocation = file("$rootDir/Pacts/Miku")
+                }
+
+//                hasPactWith('Nanoha - With Nantionality') {
+//                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
+//                }
+
+//                hasPactWith('Nanoha - No Nantionality') {
+//                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
+//                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
+//                }
+            }
+        }
+    }
+```
+
+Here we have configuration separately for Consumer Nanoha, Consumer Miku and Provider.
+
+`systemProperties['pact.rootDir'] = "$rootDir/Pacts/Nanoha"` define the path where both consumer Miku and Nanoha 
+will generate their Pacts files. In this example, we just put it at a local path and Provider can fetch these pacts 
+ directly, but for real project, you can firstly generate the pacts locally and then transmit them to a place where 
+ the Provider can get, or upload them to Pact Broker.
+ 
+ Then in Provider configuration, use `hasPactWith()` or `hasPactsWith()` to specify the path to find those Pacts.
+ 
+ *Why comment out Nanoha's Pacts path?* Because we haven't created Nanoha's Pacts, so it will raise exception with 
+ that configuration, we can enable that path later after we created the Nanoha's Pacts files.
 
 ## Contract Test between Provider and Consumer Nanoha
