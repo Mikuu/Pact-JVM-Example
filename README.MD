@@ -550,7 +550,7 @@ will generate their Pacts files. In this example, we just put it at a local path
 ## Contract Test between Provider and Consumer Nanoha
 
 The Contract Test between Nanoha and Provider is similar to Miku, the difference I want to demonstrate here is 
-*Provider State*, you can find more detailed explanation about the Provider State [here](https://docs.pact.io/documentation/provider_states.html).
+**Provider State**, you can find more detailed explanation about the Provider State [here](https://docs.pact.io/documentation/provider_states.html).
 
 ### Preparation for Provider State
 
@@ -600,12 +600,12 @@ public class PactController {
 }
 ```
 
-Because this controller should only be available at *Non-Production environment*, so I added a Profile annotation 
+Because this controller should only be available at **Non-Production environment**, so I added a Profile annotation 
 to limit that this endpoint is only existing when Provider application is running with a "pact" profile, in another 
 words, it only works in test environment.
 
-*So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `pactStateChange` 
-which accept a POST request to set the `.nationality` value to be "Japan" (by default) or "null"*. 
+**So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `pactStateChange` 
+which accept a POST request to set the `.nationality` value to be "Japan" (by default) or "null"**. 
 
 ### Create Test Case
 
