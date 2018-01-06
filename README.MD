@@ -607,6 +607,162 @@ words, it only works in test environment.
 **So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `/pactStateChange` 
 which accept a POST request to set the `.nationality` value to be "Japan" (by default) or "null"**. 
 
-### Create Test Case
+### Create Test Case at Consumer Nanoha side
+
+The test cases at Nanoha side is using DSL Lambda, here we have two cases in our test, the main difference between 
+them is the expectation for `.nationality` and the Provider State we set in `.given()`.
+
+```java
+public class NationalityPactTest {
+    PactSpecVersion pactSpecVersion;
+
+    private void checkResult(PactVerificationResult result) {
+        if (result instanceof PactVerificationResult.Error) {
+            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+        }
+        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+    }
+
+    @Test
+    public void testWithNationality() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        DslPart body = newJsonBody((root) -> {
+            root.numberType("salary");
+            root.stringValue("name", "Takamachi Nanoha");
+            root.stringValue("nationality", "Japan");
+            root.object("contact", (contactObject) -> {
+                contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
+                contactObject.stringType("Phone Number", "9090940");
+            });
+        }).build();
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("ConsumerNanohaWithNationality")
+            .hasPactWith("ExampleProvider")
+            .given("")
+            .uponReceiving("Query name is Nanoha")
+                .path("/information")
+                .query("name=Nanoha")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body(body)
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl());
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Takamachi Nanoha");
+            assertEquals(information.getNationality(), "Japan");
+        });
+
+        checkResult(result);
+    }
+
+    @Test
+    public void testNoNationality() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        DslPart body = newJsonBody((root) -> {
+            root.numberType("salary");
+            root.stringValue("name", "Takamachi Nanoha");
+            root.stringValue("nationality", null);
+            root.object("contact", (contactObject) -> {
+                contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
+                contactObject.stringType("Phone Number", "9090940");
+            });
+        }).build();
+
+        RequestResponsePact pact = ConsumerPactBuilder
+            .consumer("ConsumerNanohaNoNationality")
+            .hasPactWith("ExampleProvider")
+            .given("No nationality")
+            .uponReceiving("Query name is Nanoha")
+                .path("/information")
+                .query("name=Nanoha")
+                .method("GET")
+            .willRespondWith()
+                .headers(headers)
+                .status(200)
+                .body(body)
+            .toPact();
+
+        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+            ProviderHandler providerHandler = new ProviderHandler();
+            providerHandler.setBackendURL(mockServer.getUrl());
+            Information information = providerHandler.getInformation();
+            assertEquals(information.getName(), "Takamachi Nanoha");
+            assertEquals(information.getNationality(), null);
+        });
+
+        checkResult(result);
+    }
+}
+```
+
+To run the test:
+
+```commandline
+./gradlew :example-consumer-nanoha:test
+```
+
+Then you can find two Pacts files generated at `Pacts\Nanoha`.
 
 ### Run Contract Test at Provider side
+
+#### start Provider application
+
+As we mentioned above, before we running our test, we need start Provider application with profile "pact" (if your 
+Provider application is already started when you ran test with Miku, please kill it first), the command 
+is:
+
+```commandline
+export SPRING_PROFILES_ACTIVE=pact
+./gradlew :example-provider:bootRun
+```
+
+#### update Gradle configuration
+
+it's time to enable the Pacts file searching path in Provider configuration:
+
+`build.gralde`
+
+```groovy
+
+    hasPactWith('Nanoha - With Nantionality') {
+        pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
+    }
+
+    hasPactWith('Nanoha - No Nantionality') {
+        stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
+        pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
+    }
+```
+
+The first Pact will check the payload with default `.nationality` which value is `Japan`, while the second Pact, we 
+define a `stateChangeUrl` which is implemented by `PactController` in Provider as we talked above, and the POST body 
+is defined in `.given()` in the Pact. 
+
+#### run the contract test
+
+the same command as we did with Consumer Miku:
+
+```commandline
+./gradlew :example-provider:pactVerify
+```
+
+Then you can get the test log in the same terminal.
+
+### Break Something
+
+Is everything done? Yes, if you followed all above introductions until here, you should be able to create your Contract 
+Test by yourself. But before you go to real, let's try to break something to see how Pact could find the defect.
+
+####
