@@ -575,7 +575,7 @@ public class Nationality {
 ```
 
 Then we can change the `.nationality` value at anytime to achieve our test purpose. To change its value, I created 
-a `PactController` which can accept and reset the state value by sending a POST to endpoint `pactStateChange`:
+a `PactController` which can accept and reset the state value by sending a POST to endpoint `/pactStateChange`:
 
 `provider.PactController`
 
@@ -604,7 +604,7 @@ Because this controller should only be available at **Non-Production environment
 to limit that this endpoint is only existing when Provider application is running with a "pact" profile, in another 
 words, it only works in test environment.
 
-**So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `pactStateChange` 
+**So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `/pactStateChange` 
 which accept a POST request to set the `.nationality` value to be "Japan" (by default) or "null"**. 
 
 ### Create Test Case
