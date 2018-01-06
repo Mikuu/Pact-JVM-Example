@@ -554,7 +554,7 @@ The Contract Test between Nanoha and Provider is similar to Miku, the difference
 
 ### Preparation for Provider State
 
-In our example Provider, the returned payload for both Miku and Nanoha have a property ".nationality", this kind 
+In our example Provider, the returned payload for both Miku and Nanoha have a property `.nationality`, this kind 
 of properties values, in real project, could always be queried from database or dependency service, but in this 
 example, to simplify the Provider application logic, I just create a static property to simulate the data storage:
 
