@@ -548,3 +548,65 @@ will generate their Pacts files. In this example, we just put it at a local path
  that configuration, we can enable that path later after we created the Nanoha's Pacts files.
 
 ## Contract Test between Provider and Consumer Nanoha
+
+The Contract Test between Nanoha and Provider is similar to Miku, the difference I want to demonstrate here is 
+*Provider State*, you can find more detailed explanation about the Provider State [here](https://docs.pact.io/documentation/provider_states.html).
+
+### Preparation for Provider State
+
+In our example Provider, the returned payload for both Miku and Nanoha have a property ".nationality", this kind 
+of properties values, in real project, could always be queried from database or dependency service, but in this 
+example, to simplify the Provider application logic, I just create a static property to simulate the data storage:
+
+`provider.ulti.Nationality`
+
+```java
+public class Nationality {
+    private static String nationality = "Japan";
+
+    public static String getNationality() {
+        return nationality;
+    }
+
+    public static void setNationality(String nationality) {
+        Nationality.nationality = nationality;
+    }
+}
+```
+
+Then we can change the `.nationality` value at anytime to achieve our test purpose. To change its value, I created 
+a `PactController` which can accept and reset the state value by sending a POST to endpoint `pactStateChange`:
+
+`provider.PactController`
+
+```java
+@Profile("pact")
+@RestController
+public class PactController {
+
+    @RequestMapping(value = "/pactStateChange", method = RequestMethod.POST)
+    public void providerState(@RequestBody PactState body) {
+        switch (body.getState()) {
+            case "No nationality":
+                Nationality.setNationality(null);
+                System.out.println("Pact State Change >> remove nationality ...");
+                break;
+            case "Default nationality":
+                Nationality.setNationality("Japan");
+                System.out.println("Pact Sate Change >> set default nationality ...");
+                break;
+        }
+    }
+}
+```
+
+Because this controller should only be available at *Non-Production environment*, so I added a Profile annotation 
+to limit that this endpoint is only existing when Provider application is running with a "pact" profile, in another 
+words, it only works in test environment.
+
+*So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `pactStateChange` 
+which accept a POST request to set the `.nationality` value to be "Japan" (by default) or "null"*. 
+
+### Create Test Case
+
+### Run Contract Test at Provider side
