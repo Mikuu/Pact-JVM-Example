@@ -774,7 +774,7 @@ be captured by Pact.
 To do that, we need modify several lines of codes in Provider which could be a little difficult to 
 understand, especially for a some testers who are not familiar to Spring Boot application. 
 
-So to make the breaking simple, let's just force Provider returns `null` to all consumers, this can be easily done by 
+So to make the breaking simple, let's just force Provider returns `null` as the value to `.name` to all consumers, this can be easily done by 
 adding only a single line:
 
 `provider.InformationController`
