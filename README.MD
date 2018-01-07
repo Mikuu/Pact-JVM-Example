@@ -14,12 +14,12 @@ Clone the codes to your local, then you can find:
 
 ### Example Provider
 This is an API backend service which serves at http://localhost:8080/information, consumers
-can retrieve some person information by calling this endpoint with a query parameter **name**,
-just like calling http://localhost:8080/information?name=Miku will get:
+can retrieve some person information by calling this endpoint with a query parameter **fullName**,
+just like calling http://localhost:8080/information?fullName=Miku will get:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.miku.png)
 
-and calling http://localhost:8080/information?name=Nanoha will get:
+and calling http://localhost:8080/information?fullName=Nanoha will get:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.nanoha.png)
 
@@ -77,14 +77,14 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
                 .given("")
                 .uponReceiving("Pact JVM example Pact interaction")
                 .path("/information")
-                .query("name=Miku")
+                .query("fullName=Miku")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"fullName\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -138,14 +138,14 @@ public class PactJunitRuleTest {
                 .given("")
                 .uponReceiving("Pact JVM example Pact interaction")
                 .path("/information")
-                .query("name=Miku")
+                .query("fullName=Miku")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"fullName\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -183,14 +183,14 @@ public class PactJunitRuleMultipleInteractionsTest {
                 .given("")
                 .uponReceiving("Miku")
                 .path("/information")
-                .query("name=Miku")
+                .query("fullName=Miku")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"fullName\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -200,14 +200,14 @@ public class PactJunitRuleMultipleInteractionsTest {
                 .given("")
                 .uponReceiving("Nanoha")
                 .path("/information")
-                .query("name=Nanoha")
+                .query("fullName=Nanoha")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 80000,\n" +
-                        "    \"name\": \"Takamachi Nanoha\",\n" +
+                        "    \"fullName\": \"Takamachi Nanoha\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
@@ -254,16 +254,16 @@ public class PactJunitDSLTest {
             .consumer("JunitDSLConsumer1")
             .hasPactWith("ExampleProvider")
             .given("")
-            .uponReceiving("Query name is Miku")
+            .uponReceiving("Query fullName is Miku")
                 .path("/information")
-                .query("name=Miku")
+                .query("fullName=Miku")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"name\": \"Hatsune Miku\",\n" +
+                        "    \"fullName\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -292,16 +292,16 @@ public class PactJunitDSLTest {
             .consumer("JunitDSLConsumer2")
             .hasPactWith("ExampleProvider")
             .given("")
-            .uponReceiving("Query name is Nanoha")
+            .uponReceiving("Query fullName is Nanoha")
                 .path("/information")
-                .query("name=Nanoha")
+                .query("fullName=Nanoha")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 80000,\n" +
-                        "    \"name\": \"Takamachi Nanoha\",\n" +
+                        "    \"fullName\": \"Takamachi Nanoha\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
@@ -345,7 +345,7 @@ public class PactJunitDSLJsonBodyTest {
 
         DslPart body = new PactDslJsonBody()
                 .numberType("salary", 45000)
-                .stringType("name", "Hatsune Miku")
+                .stringType("fullName", "Hatsune Miku")
                 .stringType("nationality", "Japan")
                 .object("contact")
                 .stringValue("Email", "hatsune.miku@ariman.com")
@@ -356,9 +356,9 @@ public class PactJunitDSLJsonBodyTest {
             .consumer("JunitDSLJsonBodyConsumer")
             .hasPactWith("ExampleProvider")
             .given("")
-            .uponReceiving("Query name is Miku")
+            .uponReceiving("Query fullName is Miku")
                 .path("/information")
-                .query("name=Miku")
+                .query("fullName=Miku")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
@@ -383,7 +383,7 @@ public class PactJunitDSLJsonBodyTest {
 
         DslPart body = newJsonBody((root) -> {
             root.numberValue("salary", 45000);
-            root.stringValue("name", "Hatsune Miku");
+            root.stringValue("fullName", "Hatsune Miku");
             root.stringValue("nationality", "Japan");
             root.object("contact", (contactObject) -> {
                 contactObject.stringMatcher("Email", ".*@ariman.com", "hatsune.miku@ariman.com");
@@ -395,9 +395,9 @@ public class PactJunitDSLJsonBodyTest {
             .consumer("JunitDSLLambdaJsonBodyConsumer")
             .hasPactWith("ExampleProvider")
             .given("")
-            .uponReceiving("Query name is Miku")
+            .uponReceiving("Query fullName is Miku")
                 .path("/information")
-                .query("name=Miku")
+                .query("fullName=Miku")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
@@ -630,7 +630,7 @@ public class NationalityPactTest {
 
         DslPart body = newJsonBody((root) -> {
             root.numberType("salary");
-            root.stringValue("name", "Takamachi Nanoha");
+            root.stringValue("fullName", "Takamachi Nanoha");
             root.stringValue("nationality", "Japan");
             root.object("contact", (contactObject) -> {
                 contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
@@ -642,9 +642,9 @@ public class NationalityPactTest {
             .consumer("ConsumerNanohaWithNationality")
             .hasPactWith("ExampleProvider")
             .given("")
-            .uponReceiving("Query name is Nanoha")
+            .uponReceiving("Query fullName is Nanoha")
                 .path("/information")
-                .query("name=Nanoha")
+                .query("fullName=Nanoha")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
@@ -671,7 +671,7 @@ public class NationalityPactTest {
 
         DslPart body = newJsonBody((root) -> {
             root.numberType("salary");
-            root.stringValue("name", "Takamachi Nanoha");
+            root.stringValue("fullName", "Takamachi Nanoha");
             root.stringValue("nationality", null);
             root.object("contact", (contactObject) -> {
                 contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
@@ -683,9 +683,9 @@ public class NationalityPactTest {
             .consumer("ConsumerNanohaNoNationality")
             .hasPactWith("ExampleProvider")
             .given("No nationality")
-            .uponReceiving("Query name is Nanoha")
+            .uponReceiving("Query fullName is Nanoha")
                 .path("/information")
-                .query("name=Nanoha")
+                .query("fullName=Nanoha")
                 .method("GET")
             .willRespondWith()
                 .headers(headers)
@@ -765,4 +765,52 @@ Then you can get the test log in the same terminal.
 Is everything done? Yes, if you followed all above introductions until here, you should be able to create your Contract 
 Test by yourself. But before you go to real, let's try to break something to see how Pact could find the defect.
 
-####
+#### Break something in Provider
+
+Both Miku and Nanoha consume Provider's response for a property `.name`, in real project, there might be a case that 
+Provider would like to change this property name to `.fullname`, this could be a classic Contract Breaking which would 
+be captured by Pact. 
+
+To do that, we need modify several lines of codes in Provider which could be a little difficult to 
+understand, especially for a some testers who are not familiar to Spring Boot application. 
+
+So to make the breaking simple, let's just force Provider returns `null` to all consumers, this can be easily done by 
+adding only a single line:
+
+`provider.InformationController`
+```java
+@RestController
+public class InformationController {
+        ...
+        
+        information.setName(null);
+        return information;
+    }
+}
+```
+
+#### Retest
+
+Restart your Provider application and run the test again, you can get the test failures as this:
+
+```commandline
+...
+
+Verifying a pact between Nanoha - No Nantionality and ExampleProvider
+  [Using File /Users/ariman/Workspace/Pacting/pact-jvm-example/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json]
+  Given No nationality
+  Query name is Nanoha
+    returns a response which
+      has status code 200 (OK)
+      includes headers
+        "Content-Type" with value "application/json;charset=UTF-8" (OK)
+      has a matching body (FAILED)
+
+Failures:
+
+0) Verifying a pact between Miku - Base contract and ExampleProvider - Pact JVM example Pact interactionVerifying a pact between Miku - Base contract and ExampleProvider - Pact JVM example Pact interaction Given  returns a response which has a matching body
+      $.name -> Expected 'Hatsune Miku' but received null
+
+...
+
+```
