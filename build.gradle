@@ -37,6 +37,9 @@ subprojects {
 }
 
 project(':example-consumer-miku') {
+    version '1.0.0'
+    apply plugin: 'au.com.dius.pact'
+
     jar {
         baseName = 'example-consumer-miku'
         version =  '1.0.0'
@@ -44,6 +47,15 @@ project(':example-consumer-miku') {
 
     test {
         systemProperties['pact.rootDir'] = "$rootDir/Pacts/Miku"
+    }
+
+    pact {
+        publish {
+            pactDirectory = "$rootDir/Pacts/Miku"
+            pactBrokerUrl = mybrokerUrl
+            pactBrokerUsername = mybrokerUser
+            pactBrokerPassword = mybrokerPassword
+        }
     }
 }
 
@@ -77,6 +89,7 @@ project(':example-provider') {
                 port = 8080
                 path = '/'
 
+                // Test Pacts from local Miku
                 hasPactWith('Miku - Base contract') {
                     pactSource = file("$rootDir/Pacts/Miku/BaseConsumer-ExampleProvider.json")
                 }
@@ -85,6 +98,10 @@ project(':example-provider') {
                     pactFileLocation = file("$rootDir/Pacts/Miku")
                 }
 
+                // Test Pacts from Pact Broker
+//                hasPactsFromPactBroker(mybrokerUrl, authentication: ['Basic', mybrokerUser, mybrokerPassword])
+
+                // Test Pacts from local Nanoha
 //                hasPactWith('Nanoha - With Nantionality') {
 //                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
 //                }

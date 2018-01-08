@@ -24,7 +24,7 @@ and calling http://localhost:8080/information?name=Nanoha will get:
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.nanoha.png)
 
 ### Example Consumer Miku
-This is first example consumer we called [Miku](https://en.wikipedia.org/wiki/Hatsune_Miku), to start it:
+This is the first example consumer we called [Miku](https://en.wikipedia.org/wiki/Hatsune_Miku), to start it:
 
 `./gradlew :example-consumer-miku:bootRun`
 
@@ -54,7 +54,7 @@ Now, it's time to look into the tests.
 
 > This README will not go through all tests line by line, because 
 the tests themselves are very simple and straight forward, so I will only point out some highlights for 
-each test. For detailed explanation about the codes, please refer the official [document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
+each test. For detailed explanation about the codes, please refer the [official document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
 
 ### Create Test Cases
 
@@ -544,8 +544,8 @@ will generate their Pacts files. In this example, we just put it at a local path
  
  Then in Provider configuration, use `hasPactWith()` or `hasPactsWith()` to specify the path to find those Pacts.
  
- *Why comment out Nanoha's Pacts path?* Because we haven't created Nanoha's Pacts, so it will raise exception with 
- that configuration, we can enable that path later after we created the Nanoha's Pacts files.
+ *Why comment Nanoha's Pacts path?* Because we haven't created Nanoha's Pacts, so it will raise exception with 
+ that configuration, we can uncomment that path later after we created the Nanoha's Pacts files.
 
 ## Contract Test between Provider and Consumer Nanoha
 
