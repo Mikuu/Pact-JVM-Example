@@ -433,6 +433,30 @@ After that, you can find 7 JSON files created in folder `Pacts\Miku`. These are 
 contract between Miku and Provider, and these Pacts will be used to drive the Contract Test later at Provider 
 side.
 
+### Publish Pacts to Pact Broker
+The JSON files generated with task `test` are in the local folder which are only reachable to our local Provider, 
+while for real project practice, it's highly recommended to use [Pact Broker](https://github.com/pact-foundation/pact_broker) 
+to transport the Pacts between Consumers and Providers.
+
+After you set up a Pact Broker server for your own, you can easily share your Pacts to the broker with the `pactPublish` command:
+
+`./gradlew :example-consumer-miku:pactPublish`
+
+This command will upload your created Pacts to the broker server:
+
+```commandline
+> Task :example-consumer-miku:pactPublish 
+Publishing JunitDSLConsumer1-ExampleProvider.json ... HTTP/1.1 200 OK
+Publishing JunitDSLJsonBodyConsumer-ExampleProvider.json ... HTTP/1.1 200 OK
+Publishing JunitDSLLambdaJsonBodyConsumer-ExampleProvider.json ... HTTP/1.1 200 OK
+Publishing BaseConsumer-ExampleProvider.json ... HTTP/1.1 200 OK
+Publishing JunitRuleConsumer-ExampleProvider.json ... HTTP/1.1 200 OK
+Publishing JunitRuleMultipleInteractionsConsumer-ExampleProvider.json ... HTTP/1.1 200 OK
+Publishing JunitDSLConsumer2-ExampleProvider.json ... HTTP/1.1 200 OK
+```
+
+Later, our Provider can also fetch these Pacts from broker to drive the Contract Test.
+
 ### Run the Contract Test at Provider side
 We are using the Pact Gradle task in Provider side to run the Contract Test, which can be very easy without 
 writing any code, just execute the `pactVerify` task. **Before we run the test, make sure the Provider API is already started and running at our localhost.**
@@ -466,6 +490,29 @@ Verifying a pact between Miku - Base contract and ExampleProvider
       includes headers
         "Content-Type" with value "application/json;charset=UTF-8" (OK)
       has a matching body (OK)
+      
+  ...
+  
+  Verifying a pact between JunitRuleMultipleInteractionsConsumer and ExampleProvider
+    [from Pact Broker https://ariman.pact.dius.com.au/pacts/provider/ExampleProvider/consumer/JunitRuleMultipleInteractionsConsumer/version/1.0.0]
+    Given 
+           WARNING: State Change ignored as there is no stateChange URL
+    Miku
+      returns a response which
+        has status code 200 (OK)
+        includes headers
+          "Content-Type" with value "application/json;charset=UTF-8" (OK)
+        has a matching body (OK)
+    Given 
+           WARNING: State Change ignored as there is no stateChange URL
+    Nanoha
+      returns a response which
+        has status code 200 (OK)
+        includes headers
+          "Content-Type" with value "application/json;charset=UTF-8" (OK)
+        has a matching body (OK)
+  
+
 ```
 
 ### Gradle Configuration
@@ -474,62 +521,65 @@ Before we continue to Consumer Nanoha, let's look at the Gradle Configuration fi
 
 ```groovy
 project(':example-consumer-miku') {
-    jar {
-        baseName = 'example-consumer-miku'
-        version =  '1.0.0'
-    }
-
+    ...
     test {
         systemProperties['pact.rootDir'] = "$rootDir/Pacts/Miku"
     }
+    
+    pact {
+            publish {
+                pactDirectory = "$rootDir/Pacts/Miku"
+                pactBrokerUrl = mybrokerUrl
+                pactBrokerUsername = mybrokerUser
+                pactBrokerPassword = mybrokerPassword
+            }
+    }
+    ...
 }
 
 
 project(':example-consumer-nanoha') {
-    jar {
-        baseName = 'example-consumer-nanoha'
-        version =  '1.0.0'
-    }
-
+    ...
     test {
         systemProperties['pact.rootDir'] = "$rootDir/Pacts/Nanoha"
     }
+    ...
 }
 
 import java.net.URL
 
 project(':example-provider') {
-    apply plugin: 'au.com.dius.pact'
-
-    jar {
-        baseName = 'example-provider'
-        version =  '1.0.0'
-    }
-
+    ...
     pact {
-        serviceProviders {
-            ExampleProvider {
-                protocol = 'http'
-                host = 'localhost'
-                port = 8080
-                path = '/'
-
-                hasPactWith('Miku - Base contract') {
-                    pactSource = file("$rootDir/Pacts/Miku/BaseConsumer-ExampleProvider.json")
+            serviceProviders {
+                ExampleProvider {
+                    protocol = 'http'
+                    host = 'localhost'
+                    port = 8080
+                    path = '/'
+    
+                    // Test Pacts from local Miku
+                    hasPactWith('Miku - Base contract') {
+                        pactSource = file("$rootDir/Pacts/Miku/BaseConsumer-ExampleProvider.json")
+                    }
+    
+                    hasPactsWith('Miku - All contracts') {
+                        pactFileLocation = file("$rootDir/Pacts/Miku")
+                    }
+    
+                    // Test Pacts from Pact Broker
+                    hasPactsFromPactBroker(mybrokerUrl, authentication: ['Basic', mybrokerUser, mybrokerPassword])
+    
+                    // Test Pacts from local Nanoha
+    //                hasPactWith('Nanoha - With Nantionality') {
+    //                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
+    //                }
+    
+    //                hasPactWith('Nanoha - No Nantionality') {
+    //                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
+    //                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
+    //                }
                 }
-
-                hasPactsWith('Miku - All contracts') {
-                    pactFileLocation = file("$rootDir/Pacts/Miku")
-                }
-
-//                hasPactWith('Nanoha - With Nantionality') {
-//                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json")
-//                }
-
-//                hasPactWith('Nanoha - No Nantionality') {
-//                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
-//                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
-//                }
             }
         }
     }

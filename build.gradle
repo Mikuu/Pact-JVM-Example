@@ -99,7 +99,7 @@ project(':example-provider') {
                 }
 
                 // Test Pacts from Pact Broker
-//                hasPactsFromPactBroker(mybrokerUrl, authentication: ['Basic', mybrokerUser, mybrokerPassword])
+                hasPactsFromPactBroker(mybrokerUrl, authentication: ['Basic', mybrokerUser, mybrokerPassword])
 
                 // Test Pacts from local Nanoha
 //                hasPactWith('Nanoha - With Nantionality') {
