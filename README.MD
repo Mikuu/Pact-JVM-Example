@@ -442,7 +442,7 @@ After you set up a Pact Broker server for your own, you can easily share your Pa
 
 `./gradlew :example-consumer-miku:pactPublish`
 
-This command will upload your created Pacts to the broker server:
+This command will upload your Pacts to the broker server:
 
 ```commandline
 > Task :example-consumer-miku:pactPublish 
@@ -514,6 +514,8 @@ Verifying a pact between Miku - Base contract and ExampleProvider
   
 
 ```
+
+You can find the tests checked the Pacts from both local and remote Pact Broker.
 
 ### Gradle Configuration
 
@@ -587,12 +589,13 @@ project(':example-provider') {
 
 Here we have configuration separately for Consumer Nanoha, Consumer Miku and Provider.
 
-`systemProperties['pact.rootDir'] = "$rootDir/Pacts/Nanoha"` define the path where both consumer Miku and Nanoha 
-will generate their Pacts files. In this example, we just put it at a local path and Provider can fetch these pacts 
- directly, but for real project, you can firstly generate the pacts locally and then transmit them to a place where 
- the Provider can get, or upload them to Pact Broker.
+- `systemProperties['pact.rootDir']` defines the path where consumer Miku and Nanoha generate their Pacts files locally. 
+
+
+- `pact { ... }` defines the the Pact Broker URL and where to fetch pacts to upload to the broker.
  
- Then in Provider configuration, use `hasPactWith()` or `hasPactsWith()` to specify the path to find those Pacts.
+- Then in Provider configuration, `hasPactWith()` and `hasPactsWith()` specify the local path to find Pact files, 
+and `hasPactsFromPactBroker` specify the remote Pact Broker to fetch Pact files.
  
  *Why comment Nanoha's Pacts path?* Because we haven't created Nanoha's Pacts, so it will raise exception with 
  that configuration, we can uncomment that path later after we created the Nanoha's Pacts files.
