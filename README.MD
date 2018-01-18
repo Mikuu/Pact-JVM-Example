@@ -787,7 +787,7 @@ export SPRING_PROFILES_ACTIVE=pact
 
 #### update Gradle configuration
 
-it's time to enable the Pacts file searching path in Provider configuration:
+it's time to uncomment the Pacts file searching path in Provider configuration:
 
 `build.gralde`
 
