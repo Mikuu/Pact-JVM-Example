@@ -8,7 +8,34 @@ which uses Junit in Consumer side and Gradle task in Provider side, it will cove
 - Write Consumer tests in different ways including using Basic, Junit Rule and DSL method.
 - Example of utilizing Pact Broker.
 
-[TOC]
+
+Contents
+========
+- [PACT JVM Example](#pact-jvm-example)
+  * [1. Understand The Example Applications](#1-understand-the-example-applications)
+    + [1.1. Example Provider](#11-example-provider)
+    + [1.2. Example Consumer Miku](#12-example-consumer-miku)
+    + [1.3. Example Consumer Nanoha](#13-example-consumer-nanoha)
+  * [2. Contract Test between Provider and Consumer Miku](#2-contract-test-between-provider-and-consumer-miku)
+    + [2.1. Create Test Cases](#21-create-test-cases)
+      - [2.1.1. Basic Junit](#211-basic-junit)
+      - [2.1.2. Junit Rule](#212-junit-rule)
+      - [2.1.3. Junit DSL](#213-junit-dsl)
+    + [2.2. Run the Tests at Consumer Miku side](#22-run-the-tests-at-consumer-miku-side)
+    + [2.3. Publish Pacts to Pact Broker](#23-publish-pacts-to-pact-broker)
+    + [2.4. Run the Contract Test at Provider side](#24-run-the-contract-test-at-provider-side)
+  * [3. Gradle Configuration](#3-gradle-configuration)
+  * [4. Contract Test between Provider and Consumer Nanoha](#4-contract-test-between-provider-and-consumer-nanoha)
+    + [4.1. Preparation for Provider State](#41-preparation-for-provider-state)
+    + [4.2. Create Test Case at Consumer Nanoha side](#42-create-test-case-at-consumer-nanoha-side)
+    + [4.3. Run Contract Test at Provider side](#43-run-contract-test-at-provider-side)
+      - [4.3.1. start Provider application](#431-start-provider-application)
+      - [4.3.2. update Gradle configuration](#432-update-gradle-configuration)
+      - [4.3.3. run the contract test](#433-run-the-contract-test)
+  * [5. Break Something](#5-break-something)
+    + [5.1. Break something in Provider](#51-break-something-in-provider)
+    + [5.2. Retest](#52-retest)
+    
 
 ## 1. Understand The Example Applications
 Clone the codes to your local, then you can find:
