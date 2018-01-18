@@ -15,11 +15,15 @@ Clone the codes to your local, then you can find:
 ### Example Provider
 This is an API backend service which serves at http://localhost:8080/information, consumers
 can retrieve some person information by calling this endpoint with a query parameter **name**,
-just like calling http://localhost:8080/information?name=Miku will get:
+to start the provider:
+
+`./gradlew :example-provider:bootRun`
+
+then call http://localhost:8080/information?name=Miku will get:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.miku.png)
 
-and calling http://localhost:8080/information?name=Nanoha will get:
+and call http://localhost:8080/information?name=Nanoha will get:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.nanoha.png)
 
@@ -427,7 +431,7 @@ description about it [here](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd8
 Because we are using Junit, so to run the tests and create Pact files are very easy, just as what we always 
 run our usual Unit Test:
 
-`./gradlew :example-consumer-miku:test`
+`./gradlew :example-consumer-miku:clean test`
 
 After that, you can find 7 JSON files created in folder `Pacts\Miku`. These are the Pacts which contain the 
 contract between Miku and Provider, and these Pacts will be used to drive the Contract Test later at Provider 
@@ -763,7 +767,7 @@ public class NationalityPactTest {
 To run the test:
 
 ```commandline
-./gradlew :example-consumer-nanoha:test
+./gradlew :example-consumer-nanoha:clean test
 ```
 
 Then you can find two Pacts files generated at `Pacts\Nanoha`.
