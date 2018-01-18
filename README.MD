@@ -9,10 +9,10 @@ which uses Junit in Consumer side and Gradle task in Provider side, it will cove
 - Example of utilizing Pact Broker.
 
 
-## Understand The Example Applications
+## 1. Understand The Example Applications
 Clone the codes to your local, then you can find:
 
-### Example Provider
+### 1.1 Example Provider
 This is an API backend service which serves at http://localhost:8080/information, consumers
 can retrieve some person information by calling this endpoint with a query parameter **name**,
 to start the provider:
@@ -27,7 +27,7 @@ and call http://localhost:8080/information?name=Nanoha will get:
 
 ![](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/provider.nanoha.png)
 
-### Example Consumer Miku
+### 1.2 Example Consumer Miku
 This is the first example consumer we called [Miku](https://en.wikipedia.org/wiki/Hatsune_Miku), to start it:
 
 `./gradlew :example-consumer-miku:bootRun`
@@ -39,7 +39,7 @@ then visit http://localhost:8081/miku in your browser, you can get this:
 compare with Provider's payload and the information on the web page, you can find that the attributes `salary` and 
 `nationality` are not used by Miku.
 
-### Example Consumer Nanoha
+### 1.3 Example Consumer Nanoha
 This is the second example consumer we called [Nanoha](http://nanoha.wikia.com/wiki/Nanoha_Takamachi), to start it:
 
 `./gradlew :example-consumer-nanoha:bootRun`
@@ -52,7 +52,7 @@ similar to Miku, Nanoha does not use the attribute `salary` neither but uses att
 is a little difference between the two consumers when consuming the response from the Provider's same endpoint.  
 
 
-## Contract Test between Provider and Consumer Miku
+## 2. Contract Test between Provider and Consumer Miku
 
 Now, it's time to look into the tests. 
 
@@ -60,13 +60,13 @@ Now, it's time to look into the tests.
 the tests themselves are very simple and straight forward, so I will only point out some highlights for 
 each test. For detailed explanation about the codes, please refer the [official document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
 
-### Create Test Cases
+### 2.1 Create Test Cases
 
 By the time this example is created, PACT JVM Junit provides 3 ways to write the pact test file 
 at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
 
 
-#### Basic Junit
+#### 2.1.1 Basic Junit
 `PactBaseConsumerTest.java`
 ```java
 public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
@@ -125,7 +125,7 @@ it to Provider.
 
 `mockServer.getUrl()` can return the mock server's url, which is to be used in our handler.
 
-#### Junit Rule
+#### 2.1.2 Junit Rule
 `PactJunitRuleTest.java`
 ```java
 public class PactJunitRuleTest {
@@ -237,7 +237,7 @@ public class PactJunitRuleMultipleInteractionsTest {
 ```
 This case uses Junit Rule too, but with two interactions in one Pact file.
 
-#### Junit DSL
+#### 2.1.3 Junit DSL
 `PactJunitDSLTest`
 ```java
 public class PactJunitDSLTest {
@@ -427,7 +427,7 @@ body's attributes by Value or by Type, or even with Regular Expression. Comparin
 Lambda statements can avoid using `.close**()` methods to make the codes more clean. You can find more 
 description about it [here](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-java8).  
 
-### Run the Tests at Consumer Miku side
+### 2.2 Run the Tests at Consumer Miku side
 Because we are using Junit, so to run the tests and create Pact files are very easy, just as what we always 
 run our usual Unit Test:
 
@@ -437,7 +437,7 @@ After that, you can find 7 JSON files created in folder `Pacts\Miku`. These are 
 contract between Miku and Provider, and these Pacts will be used to drive the Contract Test later at Provider 
 side.
 
-### Publish Pacts to Pact Broker
+### 2.3 Publish Pacts to Pact Broker
 The JSON files generated with task `test` are in the local folder which are only reachable to our local Provider, 
 while for real project practice, it's highly recommended to use [Pact Broker](https://github.com/pact-foundation/pact_broker) 
 to transport the Pacts between Consumers and Providers.
@@ -461,7 +461,7 @@ Publishing JunitDSLConsumer2-ExampleProvider.json ... HTTP/1.1 200 OK
 
 Later, our Provider can also fetch these Pacts from broker to drive the Contract Test.
 
-### Run the Contract Test at Provider side
+### 2.4 Run the Contract Test at Provider side
 We are using the Pact Gradle task in Provider side to run the Contract Test, which can be very easy without 
 writing any code, just execute the `pactVerify` task. **Before we run the test, make sure the Provider API is already started and running at our localhost.**
 
@@ -521,7 +521,7 @@ Verifying a pact between Miku - Base contract and ExampleProvider
 
 You can find the tests checked the Pacts from both local and remote Pact Broker.
 
-### Gradle Configuration
+## 3. Gradle Configuration
 
 Before we continue to Consumer Nanoha, let's look at the Gradle Configuration first:
 
@@ -604,12 +604,12 @@ and `hasPactsFromPactBroker` specify the remote Pact Broker to fetch Pact files.
  *Why comment Nanoha's Pacts path?* Because we haven't created Nanoha's Pacts, so it will raise exception with 
  that configuration, we can uncomment that path later after we created the Nanoha's Pacts files.
 
-## Contract Test between Provider and Consumer Nanoha
+## 4. Contract Test between Provider and Consumer Nanoha
 
 The Contract Test between Nanoha and Provider is similar to Miku, the difference I want to demonstrate here is 
 **Provider State**, you can find more detailed explanation about the Provider State [here](https://docs.pact.io/documentation/provider_states.html).
 
-### Preparation for Provider State
+### 4.1 Preparation for Provider State
 
 In our example Provider, the returned payload for both Miku and Nanoha have a property `.nationality`, this kind 
 of properties values, in real project, could always be queried from database or dependency service, but in this 
@@ -664,7 +664,7 @@ words, it only works in test environment.
 **So, to summary all above things, when Provider is running with a "pact" profile, it serves an endpoint `/pactStateChange` 
 which accept a POST request to set the `.nationality` value to be "Japan" (by default) or "null"**. 
 
-### Create Test Case at Consumer Nanoha side
+### 4.2 Create Test Case at Consumer Nanoha side
 
 The test cases at Nanoha side is using DSL Lambda, here we have two cases in our test, the main difference between 
 them is the expectation for `.nationality` and the Provider State we set in `.given()`.
@@ -772,9 +772,9 @@ To run the test:
 
 Then you can find two Pacts files generated at `Pacts\Nanoha`.
 
-### Run Contract Test at Provider side
+### 4.3 Run Contract Test at Provider side
 
-#### start Provider application
+#### 4.3.1 start Provider application
 
 As we mentioned above, before we running our test, we need start Provider application with profile "pact" (if your 
 Provider application is already started when you ran test with Miku, please kill it first), the command 
@@ -785,7 +785,7 @@ export SPRING_PROFILES_ACTIVE=pact
 ./gradlew :example-provider:bootRun
 ```
 
-#### update Gradle configuration
+#### 4.3.2 update Gradle configuration
 
 it's time to uncomment the Pacts file searching path in Provider configuration:
 
@@ -807,7 +807,7 @@ The first Pact will check the payload with default `.nationality` which value is
 define a `stateChangeUrl` which is implemented by `PactController` in Provider as we talked above, and the POST body 
 is defined in `.given()` in the Pact. 
 
-#### run the contract test
+#### 4.3.3 run the contract test
 
 the same command as we did with Consumer Miku:
 
@@ -817,12 +817,12 @@ the same command as we did with Consumer Miku:
 
 Then you can get the test log in the same terminal.
 
-### Break Something
+## 5. Break Something
 
 Is everything done? Yes, if you followed all above introductions until here, you should be able to create your Contract 
 Test by yourself. But before you go to real, let's try to break something to see how Pact could find the defect.
 
-#### Break something in Provider
+### 5.1 Break something in Provider
 
 Both Miku and Nanoha consume Provider's response for a property `.name`, in real project, there might be a case that 
 Provider would like to change this property name to `.fullname`, this could be a classic Contract Breaking which would 
@@ -846,7 +846,7 @@ public class InformationController {
 }
 ```
 
-#### Retest
+### 5.2 Retest
 
 Restart your Provider application and run the test again, you can get the test failures as this:
 
