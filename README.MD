@@ -490,13 +490,13 @@ Publishing JunitDSLConsumer2-ExampleProvider.json ... HTTP/1.1 200 OK
 
 Then you can find the *Relationships* in [our Pact Broker](https://ariman.pact.dius.com.au/)
 
-> you can find their are '7' consumers to only 1 provider, in real project, it should be that, because we have only one 
-consumer Miku here, it should be only 1 consumer to 1 provider, while in this example I make it's '7' is only to show 
+> you can find their are '7' consumers to 1 provider, in real project, it should NOT like that, because we have only one 
+consumer Miku here, it should be only 1 consumer to 1 provider, while in this example, making it's '7' is only to show 
 that how Pact Broker can display the relationships beautifully.
 
 ![image](https://github.com/Mikuu/Pact-JVM-Example/blob/master/screenshot/pact-broker.png)
 
-Later, our Provider can also fetch these Pacts from broker to drive the Contract Test.
+Later, our Provider can fetch these Pacts from broker to drive the Contract Test.
 
 ### 2.4. Run the Contract Test at Provider side
 We are using the Pact Gradle task in Provider side to run the Contract Test, which can be very easy without 
@@ -559,7 +559,7 @@ Verifying a pact between Miku - Base contract and ExampleProvider
 You can find the tests checked the Pacts from both local and remote Pact Broker.
 
 > Since this example is open to all Pact learners, means everyone can upload their own Pacts to this Pact Broker, including 
-correct and incorrect pacts, so don't be surprised if your tests run failed with the pacts from this Pact Broker, you can 
+correct and incorrect pacts, so don't be surprised if your tests run failed with the pacts from this Pact Broker. You can 
 always upload correct pacts to the broker, but just don't rely on it, the pacts in this broker may be cleared at anytime 
  for reset a clean environment.
 
