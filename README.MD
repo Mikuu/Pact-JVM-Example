@@ -6,6 +6,7 @@ which uses Junit in Consumer side and Gradle task in Provider side, it will cove
 - Microservices examples created with Spring Boot.
 - Example of one Provider to two Consumers.
 - Write Consumer tests in different ways including using Basic, Junit Rule and DSL method.
+- Example of Provider State.
 - Example of utilizing Pact Broker.
 
 
@@ -85,7 +86,7 @@ is a little difference between the two consumers when consuming the response fro
 Now, it's time to look into the tests. 
 
 > This README will not go through all tests line by line, because 
-the tests themselves are very simple and straight forward, so I will only point out some highlights for 
+the tests themselves are very simple and straightforward, so I will only point out some highlights for 
 each test. For detailed explanation about the codes, please refer the [official document](https://github.com/DiUS/pact-jvm/tree/be4a32b08ebbd89321dc37cbfe838fdac37774b3/pact-jvm-consumer-junit)
 
 ### 2.1. Create Test Cases
