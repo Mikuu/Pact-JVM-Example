@@ -471,6 +471,11 @@ The JSON files generated with task `test` are in the local folder which are only
 while for real project practice, it's highly recommended to use [Pact Broker](https://github.com/pact-foundation/pact_broker) 
 to transport the Pacts between Consumers and Providers.
 
+> There's a `docker-compose.yml` file that aids setting up an instance of the Pact Broker.
+> Run `docker-compose up` and you'll have a Broker running at `http://localhost/`.
+> It'll set up an instance of PostgreSQL as well, but the data will be lost at every restart.
+> In order to use it, in `build.gradle`, set `pactBrokerUrl` to `http://localhost` and both `pactBrokerUsername` and `pactBrokerPassword` to `''`.
+
 After you set up a Pact Broker server for your own, you can easily share your Pacts to the broker with the `pactPublish` command:
 
 `./gradlew :example-consumer-miku:pactPublish`

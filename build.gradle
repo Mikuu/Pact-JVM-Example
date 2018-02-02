@@ -61,9 +61,9 @@ project(':example-consumer-miku') {
     pact {
         publish {
             pactDirectory = "$rootDir/Pacts/Miku"
-            pactBrokerUrl = 'http://localhost'
-            pactBrokerUsername = ''
-            pactBrokerPassword = ''
+            pactBrokerUrl = mybrokerUrl
+            pactBrokerUsername = mybrokerUser
+            pactBrokerPassword = mybrokerPassword
         }
     }
 }
@@ -93,7 +93,7 @@ project(':example-provider') {
             ExampleProvider {
                 protocol = 'http'
                 host = 'localhost'
-                port = 8080
+                port = 80
                 path = '/'
 
                 // Test Pacts from local Miku
@@ -106,7 +106,7 @@ project(':example-provider') {
                 }
 
                 // Test Pacts from Pact Broker
-                hasPactsFromPactBroker('http://localhost', authentication: ['Basic', '', ''])
+                hasPactsFromPactBroker(mybrokerUrl, authentication: ['Basic', mybrokerUser, mybrokerPassword])
 
                 // Test Pacts from local Nanoha
 //                hasPactWith('Nanoha - With Nantionality') {
@@ -122,5 +122,3 @@ project(':example-provider') {
     }
 
 }
-
-
