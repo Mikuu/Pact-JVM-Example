@@ -1,28 +1,37 @@
 buildscript {
+    ext {
+        springBootVersion = '2.0.0.RC1'
+    }
     repositories {
         mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.thymeleaf:thymeleaf:3.0.8.RELEASE")
         classpath("au.com.dius:pact-jvm-provider-gradle_2.12:3.5.10")
     }
 }
 
 allprojects {
-  apply plugin: 'java'
-  apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
-  repositories {
-     mavenCentral()
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
   }
 }
 
 subprojects {
   apply plugin: 'org.springframework.boot'
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  sourceCompatibility = 1.9
+  targetCompatibility = 1.9
 
   dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
@@ -52,9 +61,9 @@ project(':example-consumer-miku') {
     pact {
         publish {
             pactDirectory = "$rootDir/Pacts/Miku"
-            pactBrokerUrl = mybrokerUrl
-            pactBrokerUsername = mybrokerUser
-            pactBrokerPassword = mybrokerPassword
+            pactBrokerUrl = 'http://localhost'
+            pactBrokerUsername = ''
+            pactBrokerPassword = ''
         }
     }
 }
@@ -99,7 +108,7 @@ project(':example-provider') {
                 }
 
                 // Test Pacts from Pact Broker
-                hasPactsFromPactBroker(mybrokerUrl, authentication: ['Basic', mybrokerUser, mybrokerPassword])
+                hasPactsFromPactBroker('http://localhost', authentication: ['Basic', '', ''])
 
                 // Test Pacts from local Nanoha
 //                hasPactWith('Nanoha - With Nantionality') {
