@@ -98,7 +98,12 @@ at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
 #### 2.1.1. Basic Junit
 `PactBaseConsumerTest.java`
 ```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
+
+    @Autowired
+    ProviderService providerService;
 
     @Override
     @Pact(provider="ExampleProvider", consumer="BaseConsumer")
@@ -140,14 +145,13 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
 
     @Override
     protected void runTest(MockServer mockServer) throws IOException {
-        ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURL(mockServer.getUrl());
-        Information information = providerHandler.getInformation();
+        providerService.setBackendURL(mockServer.getUrl());
+        Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
     }
 }
 ```
-The `ProviderHandler` is the same one used in consumer Miku, we just use it to do a self 
+The `providerService` is the same one used in consumer Miku, we just use it to do a self 
 integration test, the purpose for this is to check if consumer Miku can handle the mocked 
 response correctly, then ensure the Pact content created are just as we need before we send 
 it to Provider.
@@ -157,7 +161,12 @@ it to Provider.
 #### 2.1.2. Junit Rule
 `PactJunitRuleTest.java`
 ```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactJunitRuleTest {
+
+    @Autowired
+    ProviderService providerService;
 
     @Rule
     public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
@@ -191,9 +200,8 @@ public class PactJunitRuleTest {
     @Test
     @PactVerification
     public void runTest() {
-        ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURL(mockProvider.getUrl());
-        Information information = providerHandler.getInformation();
+        providerService.setBackendURL(mockProvider.getUrl());
+        Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
     }
 }
@@ -202,7 +210,12 @@ This test uses Junit Rule which can simplify the writing of test cases comparing
 
 `PactJunitRuleMultipleInteractionsTest.java`
 ```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactJunitRuleMultipleInteractionsTest {
+
+    @Autowired
+    ProviderService providerService;
 
     @Rule
     public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
@@ -253,13 +266,12 @@ public class PactJunitRuleMultipleInteractionsTest {
     @Test
     @PactVerification()
     public void runTest() {
-        ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURL(mockProvider.getUrl());
-        Information information = providerHandler.getInformation();
+        providerService.setBackendURL(mockProvider.getUrl());
+        Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
 
-        providerHandler.setBackendURL(mockProvider.getUrl(), "Nanoha");
-        information = providerHandler.getInformation();
+        providerService.setBackendURL(mockProvider.getUrl(), "Nanoha");
+        information = providerService.getInformation();
         assertEquals(information.getName(), "Takamachi Nanoha");
     }
 }
@@ -269,7 +281,12 @@ This case uses Junit Rule too, but with two interactions in one Pact file.
 #### 2.1.3. Junit DSL
 `PactJunitDSLTest`
 ```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactJunitDSLTest {
+
+    @Autowired
+    ProviderService providerService;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
@@ -307,9 +324,8 @@ public class PactJunitDSLTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault();
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl(), "Miku");
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl(), "Miku");
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
         });
 
@@ -345,10 +361,9 @@ public class PactJunitDSLTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault();
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl(), "Nanoha");
+            providerService.setBackendURL(mockServer.getUrl(), "Nanoha");
 
-            Information information = providerHandler.getInformation();
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
         });
 
@@ -361,8 +376,13 @@ in one test class.
 
 `PactJunitDSLJsonBodyTest`
 ```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactJunitDSLJsonBodyTest {
     PactSpecVersion pactSpecVersion;
+
+    @Autowired
+    ProviderService providerService;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
@@ -401,9 +421,8 @@ public class PactJunitDSLJsonBodyTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl());
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
         });
 
@@ -440,9 +459,8 @@ public class PactJunitDSLJsonBodyTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl());
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
         });
 
@@ -717,8 +735,13 @@ The test cases at Nanoha side is using DSL Lambda, here we have two cases in our
 them is the expectation for `.nationality` and the Provider State we set in `.given()`.
 
 ```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class NationalityPactTest {
     PactSpecVersion pactSpecVersion;
+
+    @Autowired
+    ProviderService providerService;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
@@ -758,9 +781,8 @@ public class NationalityPactTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl());
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
             assertEquals(information.getNationality(), "Japan");
         });
@@ -799,9 +821,8 @@ public class NationalityPactTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl());
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
             assertEquals(information.getNationality(), null);
         });
