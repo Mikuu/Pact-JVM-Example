@@ -5,15 +5,23 @@ import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactJunitRuleTest {
 
+    @Autowired
+    ProviderService providerService;
+    
     @Rule
     public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
 
@@ -46,9 +54,8 @@ public class PactJunitRuleTest {
     @Test
     @PactVerification
     public void runTest() {
-        ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURL(mockProvider.getUrl());
-        Information information = providerHandler.getInformation();
+        providerService.setBackendURL(mockProvider.getUrl());
+        Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
     }
 }

@@ -8,6 +8,10 @@ import au.com.dius.pact.model.MockProviderConfig;
 import au.com.dius.pact.model.PactSpecVersion;
 import au.com.dius.pact.model.RequestResponsePact;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,8 +20,13 @@ import static au.com.dius.pact.consumer.ConsumerPactRunnerKt.runConsumerTest;
 import static org.junit.Assert.assertEquals;
 import static io.pactfoundation.consumer.dsl.LambdaDsl.*;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactJunitDSLJsonBodyTest {
     PactSpecVersion pactSpecVersion;
+    
+    @Autowired
+    ProviderService providerService;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
@@ -56,9 +65,8 @@ public class PactJunitDSLJsonBodyTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl());
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
         });
 
@@ -95,9 +103,8 @@ public class PactJunitDSLJsonBodyTest {
 
         MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
         PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
-            ProviderHandler providerHandler = new ProviderHandler();
-            providerHandler.setBackendURL(mockServer.getUrl());
-            Information information = providerHandler.getInformation();
+            providerService.setBackendURL(mockServer.getUrl());
+            Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
         });
 

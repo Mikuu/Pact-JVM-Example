@@ -5,6 +5,10 @@ import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.Pact;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,7 +16,12 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
+
+    @Autowired
+    ProviderService providerService;
 
     @Override
     @Pact(provider="ExampleProvider", consumer="BaseConsumer")
@@ -54,9 +63,8 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
 
     @Override
     protected void runTest(MockServer mockServer) throws IOException {
-        ProviderHandler providerHandler = new ProviderHandler();
-        providerHandler.setBackendURL(mockServer.getUrl());
-        Information information = providerHandler.getInformation();
+        providerService.setBackendURL(mockServer.getUrl());
+        Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
     }
 }

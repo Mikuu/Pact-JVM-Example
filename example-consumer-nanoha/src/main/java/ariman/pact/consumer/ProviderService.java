@@ -1,8 +1,10 @@
 package ariman.pact.consumer;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-public class ProviderHandler {
+@Service
+public class ProviderService {
 
     private String backendURL = "http://localhost:8080/information?name=Nanoha";
 
