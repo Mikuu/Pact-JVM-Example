@@ -1,16 +1,16 @@
 package ariman.pact.consumer;
 
-import au.com.dius.pact.consumer.ConsumerPactTestMk2;
 import au.com.dius.pact.consumer.MockServer;
-import au.com.dius.pact.consumer.Pact;
+import au.com.dius.pact.consumer.PactTestExecutionContext;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.consumer.junit.ConsumerPactTest;
+import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.annotations.Pact;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
+public class PactBaseConsumerTest extends ConsumerPactTest {
 
     @Autowired
     ProviderService providerService;
@@ -62,7 +62,7 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
     }
 
     @Override
-    protected void runTest(MockServer mockServer) throws IOException {
+    protected void runTest(MockServer mockServer, PactTestExecutionContext context) {
         providerService.setBackendURL(mockServer.getUrl());
         Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");

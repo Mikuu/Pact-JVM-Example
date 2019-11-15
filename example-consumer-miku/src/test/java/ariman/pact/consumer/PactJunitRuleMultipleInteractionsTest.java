@@ -1,10 +1,10 @@
 package ariman.pact.consumer;
 
-import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRuleMk2;
-import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.consumer.junit.PactProviderRule;
+import au.com.dius.pact.consumer.junit.PactVerification;
+import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.annotations.Pact;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +25,7 @@ public class PactJunitRuleMultipleInteractionsTest {
     ProviderService providerService;
     
     @Rule
-    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
+    public PactProviderRule mockProvider = new PactProviderRule("ExampleProvider",this);
 
     @Pact(consumer="JunitRuleMultipleInteractionsConsumer")
     public RequestResponsePact createPact(PactDslWithProvider builder) {

@@ -1,88 +1,88 @@
 {
-    "provider": {
-        "name": "ExampleProvider"
-    },
-    "consumer": {
-        "name": "ConsumerNanohaNoNationality"
-    },
-    "interactions": [
-        {
-            "description": "Query name is Nanoha",
-            "request": {
-                "method": "GET",
-                "path": "/information",
-                "query": {
-                    "name": [
-                        "Nanoha"
-                    ]
-                }
-            },
-            "response": {
-                "status": 200,
-                "headers": {
-                    "Content-Type": "application/json;charset=UTF-8"
-                },
-                "body": {
-                    "nationality": null,
-                    "contact": {
-                        "Email": "takamachi.nanoha@ariman.com",
-                        "Phone Number": "9090940"
-                    },
-                    "name": "Takamachi Nanoha",
-                    "salary": 100
-                },
-                "matchingRules": {
-                    "body": {
-                        "$.salary": {
-                            "matchers": [
-                                {
-                                    "match": "number"
-                                }
-                            ],
-                            "combine": "AND"
-                        },
-                        "$.contact.Email": {
-                            "matchers": [
-                                {
-                                    "match": "regex",
-                                    "regex": ".*@ariman.com"
-                                }
-                            ],
-                            "combine": "AND"
-                        },
-                        "$.contact['Phone Number']": {
-                            "matchers": [
-                                {
-                                    "match": "type"
-                                }
-                            ],
-                            "combine": "AND"
-                        }
-                    }
-                },
-                "generators": {
-                    "body": {
-                        "$.salary": {
-                            "type": "RandomInt",
-                            "min": 0,
-                            "max": 2147483647
-                        }
-                    }
-                }
-            },
-            "providerStates": [
-                {
-                    "name": "No nationality"
-                }
-            ]
+  "provider": {
+    "name": "ExampleProvider"
+  },
+  "consumer": {
+    "name": "ConsumerNanohaNoNationality"
+  },
+  "interactions": [
+    {
+      "description": "Query name is Nanoha",
+      "request": {
+        "method": "GET",
+        "path": "/information",
+        "query": {
+          "name": [
+            "Nanoha"
+          ]
         }
-    ],
-    "metadata": {
-        "pact-specification": {
-            "version": "3.0.0"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json;charset\u003dUTF-8"
         },
-        "pact-jvm": {
-            "version": "3.5.12"
+        "body": {
+          "nationality": null,
+          "contact": {
+            "Email": "takamachi.nanoha@ariman.com",
+            "Phone Number": "9090940"
+          },
+          "name": "Takamachi Nanoha",
+          "salary": 100
+        },
+        "matchingRules": {
+          "body": {
+            "$.salary": {
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.contact.Email": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": ".*@ariman.com"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.contact[\u0027Phone Number\u0027]": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        },
+        "generators": {
+          "body": {
+            "$.salary": {
+              "type": "RandomInt",
+              "min": 0,
+              "max": 2147483647
+            }
+          }
         }
+      },
+      "providerStates": [
+        {
+          "name": "No nationality"
+        }
+      ]
     }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "4.0.3"
+    }
+  }
 }

@@ -3,9 +3,9 @@ package ariman.pact.consumer;
 import au.com.dius.pact.consumer.ConsumerPactBuilder;
 import au.com.dius.pact.consumer.PactVerificationResult;
 import au.com.dius.pact.consumer.dsl.DslPart;
-import au.com.dius.pact.model.MockProviderConfig;
-import au.com.dius.pact.model.PactSpecVersion;
-import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.consumer.model.MockProviderConfig;
+import au.com.dius.pact.core.model.PactSpecVersion;
+import au.com.dius.pact.core.model.RequestResponsePact;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +16,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static au.com.dius.pact.consumer.ConsumerPactRunnerKt.runConsumerTest;
-import static org.junit.Assert.assertEquals;
-import static io.pactfoundation.consumer.dsl.LambdaDsl.*;
+import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class NationalityPactTest {
-    PactSpecVersion pactSpecVersion;
 
     @Autowired
     ProviderService providerService;
-    
+
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
-            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+            throw new RuntimeException(((PactVerificationResult.Error) result).getError());
         }
-        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        assertThat(result, is(instanceOf(PactVerificationResult.Ok.class)));
     }
 
     @Test
@@ -50,25 +51,26 @@ public class NationalityPactTest {
         }).build();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("ConsumerNanohaWithNationality")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query name is Nanoha")
+                .consumer("ConsumerNanohaWithNationality")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Nanoha")
                 .path("/information")
                 .query("name=Nanoha")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body(body)
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        MockProviderConfig config = MockProviderConfig.createDefault(PactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl());
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
             assertEquals(information.getNationality(), "Japan");
+            return null;
         });
 
         checkResult(result);
@@ -90,25 +92,26 @@ public class NationalityPactTest {
         }).build();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("ConsumerNanohaNoNationality")
-            .hasPactWith("ExampleProvider")
-            .given("No nationality")
-            .uponReceiving("Query name is Nanoha")
+                .consumer("ConsumerNanohaNoNationality")
+                .hasPactWith("ExampleProvider")
+                .given("No nationality")
+                .uponReceiving("Query name is Nanoha")
                 .path("/information")
                 .query("name=Nanoha")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body(body)
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        MockProviderConfig config = MockProviderConfig.createDefault(PactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl());
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
-            assertEquals(information.getNationality(), null);
+            assertNull(information.getNationality());
+            return null;
         });
 
         checkResult(result);

@@ -2,8 +2,8 @@ package ariman.pact.consumer;
 
 import au.com.dius.pact.consumer.ConsumerPactBuilder;
 import au.com.dius.pact.consumer.PactVerificationResult;
-import au.com.dius.pact.model.MockProviderConfig;
-import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.consumer.model.MockProviderConfig;
+import au.com.dius.pact.core.model.RequestResponsePact;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static au.com.dius.pact.consumer.ConsumerPactRunnerKt.runConsumerTest;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -22,12 +25,12 @@ public class PactJunitDSLTest {
 
     @Autowired
     ProviderService providerService;
-    
+
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
-            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+            throw new RuntimeException(((PactVerificationResult.Error) result).getError());
         }
-        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        assertThat(result, is(instanceOf(PactVerificationResult.Ok.class)));
     }
 
     @Test
@@ -36,14 +39,14 @@ public class PactJunitDSLTest {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLConsumer1")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query name is Miku")
+                .consumer("JunitDSLConsumer1")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Miku")
                 .path("/information")
                 .query("name=Miku")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
@@ -55,13 +58,14 @@ public class PactJunitDSLTest {
                         "        \"Phone Number\": \"9090950\"\n" +
                         "    }\n" +
                         "}")
-            .toPact();
+                .toPact();
 
         MockProviderConfig config = MockProviderConfig.createDefault();
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl(), "Miku");
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
+            return null;
         });
 
         checkResult(result);
@@ -73,14 +77,14 @@ public class PactJunitDSLTest {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLConsumer2")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query name is Nanoha")
+                .consumer("JunitDSLConsumer2")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Nanoha")
                 .path("/information")
                 .query("name=Nanoha")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
@@ -95,11 +99,11 @@ public class PactJunitDSLTest {
                 .toPact();
 
         MockProviderConfig config = MockProviderConfig.createDefault();
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl(), "Nanoha");
-
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
+            return null;
         });
 
         checkResult(result);

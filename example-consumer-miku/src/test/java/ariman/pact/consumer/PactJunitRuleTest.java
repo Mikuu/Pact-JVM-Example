@@ -1,8 +1,10 @@
 package ariman.pact.consumer;
 
-import au.com.dius.pact.consumer.*;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.RequestResponsePact;
+import au.com.dius.pact.consumer.junit.PactProviderRule;
+import au.com.dius.pact.consumer.junit.PactVerification;
+import au.com.dius.pact.core.model.RequestResponsePact;
+import au.com.dius.pact.core.model.annotations.Pact;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,11 +23,11 @@ public class PactJunitRuleTest {
 
     @Autowired
     ProviderService providerService;
-    
-    @Rule
-    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
 
-    @Pact(consumer="JunitRuleConsumer")
+    @Rule
+    public PactProviderRule mockProvider = new PactProviderRule("ExampleProvider", this);
+
+    @Pact(consumer = "JunitRuleConsumer")
     public RequestResponsePact createPact(PactDslWithProvider builder) {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
