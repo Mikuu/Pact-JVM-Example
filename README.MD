@@ -5,7 +5,7 @@ which uses Junit in Consumer side and Gradle task in Provider side, it will cove
 
 - Microservices examples created with Spring Boot.
 - Example of one Provider to two Consumers.
-- Write Consumer tests in different ways including using Basic, Junit Rule and DSL method.
+- Write Consumer tests in different ways including using Basic Junit, Junit Rule and DSL method.
 - Example of Provider State.
 - Example of utilizing Pact Broker.
 
@@ -36,6 +36,7 @@ Contents
   * [5. Break Something](#5-break-something)
     + [5.1. Break something in Provider](#51-break-something-in-provider)
     + [5.2. Retest](#52-retest)
+  * [6. Contribution](#6-contribution)  
     
 
 ## 1. Understand The Example Applications
@@ -100,7 +101,7 @@ at consumer side, the **Basic Junit**, the **Junit Rule** and **Junit DSL**.
 ```java
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
+public class PactBaseConsumerTest extends ConsumerPactTest {
 
     @Autowired
     ProviderService providerService;
@@ -115,14 +116,14 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
                 .given("")
                 .uponReceiving("Pact JVM example Pact interaction")
                 .path("/information")
-                .query("fullName=Miku")
+                .query("name=Miku")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"fullName\": \"Hatsune Miku\",\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -144,7 +145,7 @@ public class PactBaseConsumerTest extends ConsumerPactTestMk2 {
     }
 
     @Override
-    protected void runTest(MockServer mockServer) throws IOException {
+    protected void runTest(MockServer mockServer, PactTestExecutionContext context) {
         providerService.setBackendURL(mockServer.getUrl());
         Information information = providerService.getInformation();
         assertEquals(information.getName(), "Hatsune Miku");
@@ -169,9 +170,9 @@ public class PactJunitRuleTest {
     ProviderService providerService;
 
     @Rule
-    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
+    public PactProviderRule mockProvider = new PactProviderRule("ExampleProvider", this);
 
-    @Pact(consumer="JunitRuleConsumer")
+    @Pact(consumer = "JunitRuleConsumer")
     public RequestResponsePact createPact(PactDslWithProvider builder) {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
@@ -180,14 +181,14 @@ public class PactJunitRuleTest {
                 .given("")
                 .uponReceiving("Pact JVM example Pact interaction")
                 .path("/information")
-                .query("fullName=Miku")
+                .query("name=Miku")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"fullName\": \"Hatsune Miku\",\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -216,9 +217,9 @@ public class PactJunitRuleMultipleInteractionsTest {
 
     @Autowired
     ProviderService providerService;
-
+    
     @Rule
-    public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("ExampleProvider",this);
+    public PactProviderRule mockProvider = new PactProviderRule("ExampleProvider",this);
 
     @Pact(consumer="JunitRuleMultipleInteractionsConsumer")
     public RequestResponsePact createPact(PactDslWithProvider builder) {
@@ -229,14 +230,14 @@ public class PactJunitRuleMultipleInteractionsTest {
                 .given("")
                 .uponReceiving("Miku")
                 .path("/information")
-                .query("fullName=Miku")
+                .query("name=Miku")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"fullName\": \"Hatsune Miku\",\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
@@ -246,14 +247,14 @@ public class PactJunitRuleMultipleInteractionsTest {
                 .given("")
                 .uponReceiving("Nanoha")
                 .path("/information")
-                .query("fullName=Nanoha")
+                .query("name=Nanoha")
                 .method("GET")
                 .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 80000,\n" +
-                        "    \"fullName\": \"Takamachi Nanoha\",\n" +
+                        "    \"name\": \"Takamachi Nanoha\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
@@ -290,9 +291,9 @@ public class PactJunitDSLTest {
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
-            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+            throw new RuntimeException(((PactVerificationResult.Error) result).getError());
         }
-        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        assertThat(result, is(instanceOf(PactVerificationResult.Ok.class)));
     }
 
     @Test
@@ -301,32 +302,33 @@ public class PactJunitDSLTest {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLConsumer1")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query fullName is Miku")
+                .consumer("JunitDSLConsumer1")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Miku")
                 .path("/information")
-                .query("fullName=Miku")
+                .query("name=Miku")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 45000,\n" +
-                        "    \"fullName\": \"Hatsune Miku\",\n" +
+                        "    \"name\": \"Hatsune Miku\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"hatsune.miku@ariman.com\",\n" +
                         "        \"Phone Number\": \"9090950\"\n" +
                         "    }\n" +
                         "}")
-            .toPact();
+                .toPact();
 
         MockProviderConfig config = MockProviderConfig.createDefault();
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl(), "Miku");
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
+            return null;
         });
 
         checkResult(result);
@@ -338,19 +340,19 @@ public class PactJunitDSLTest {
         headers.put("Content-Type", "application/json;charset=UTF-8");
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLConsumer2")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query fullName is Nanoha")
+                .consumer("JunitDSLConsumer2")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Nanoha")
                 .path("/information")
-                .query("fullName=Nanoha")
+                .query("name=Nanoha")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body("{\n" +
                         "    \"salary\": 80000,\n" +
-                        "    \"fullName\": \"Takamachi Nanoha\",\n" +
+                        "    \"name\": \"Takamachi Nanoha\",\n" +
                         "    \"nationality\": \"Japan\",\n" +
                         "    \"contact\": {\n" +
                         "        \"Email\": \"takamachi.nanoha@ariman.com\",\n" +
@@ -360,11 +362,11 @@ public class PactJunitDSLTest {
                 .toPact();
 
         MockProviderConfig config = MockProviderConfig.createDefault();
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl(), "Nanoha");
-
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
+            return null;
         });
 
         checkResult(result);
@@ -379,16 +381,15 @@ in one test class.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PactJunitDSLJsonBodyTest {
-    PactSpecVersion pactSpecVersion;
 
     @Autowired
     ProviderService providerService;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
-            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+            throw new RuntimeException(((PactVerificationResult.Error) result).getError());
         }
-        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        assertThat(result, is(instanceOf(PactVerificationResult.Ok.class)));
     }
 
     @Test
@@ -398,7 +399,7 @@ public class PactJunitDSLJsonBodyTest {
 
         DslPart body = new PactDslJsonBody()
                 .numberType("salary", 45000)
-                .stringType("fullName", "Hatsune Miku")
+                .stringType("name", "Hatsune Miku")
                 .stringType("nationality", "Japan")
                 .object("contact")
                 .stringValue("Email", "hatsune.miku@ariman.com")
@@ -406,28 +407,30 @@ public class PactJunitDSLJsonBodyTest {
                 .closeObject();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLJsonBodyConsumer")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query fullName is Miku")
+                .consumer("JunitDSLJsonBodyConsumer")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Miku")
                 .path("/information")
-                .query("fullName=Miku")
+                .query("name=Miku")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body(body)
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        MockProviderConfig config = MockProviderConfig.createDefault(PactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl());
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
+            return null;
         });
 
         checkResult(result);
     }
+
     @Test
     public void testWithLambdaDSLJsonBody() {
         Map<String, String> headers = new HashMap<String, String>();
@@ -435,7 +438,7 @@ public class PactJunitDSLJsonBodyTest {
 
         DslPart body = newJsonBody((root) -> {
             root.numberValue("salary", 45000);
-            root.stringValue("fullName", "Hatsune Miku");
+            root.stringValue("name", "Hatsune Miku");
             root.stringValue("nationality", "Japan");
             root.object("contact", (contactObject) -> {
                 contactObject.stringMatcher("Email", ".*@ariman.com", "hatsune.miku@ariman.com");
@@ -444,29 +447,29 @@ public class PactJunitDSLJsonBodyTest {
         }).build();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("JunitDSLLambdaJsonBodyConsumer")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query fullName is Miku")
+                .consumer("JunitDSLLambdaJsonBodyConsumer")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Miku")
                 .path("/information")
-                .query("fullName=Miku")
+                .query("name=Miku")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body(body)
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        MockProviderConfig config = MockProviderConfig.createDefault(PactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl());
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Hatsune Miku");
+            return null;
         });
 
         checkResult(result);
     }
-
 }
 ```
 When use Json Body in DSL usage, we can control the test accuracy by defining whether we check the response 
@@ -707,7 +710,7 @@ a `PactController` which can accept and reset the state value by sending a POST 
 public class PactController {
 
     @RequestMapping(value = "/pactStateChange", method = RequestMethod.POST)
-    public void providerState(@RequestBody PactState body) {
+    public PactStateChangeResponseDTO providerState(@RequestBody PactState body) {
         switch (body.getState()) {
             case "No nationality":
                 Nationality.setNationality(null);
@@ -718,6 +721,14 @@ public class PactController {
                 System.out.println("Pact Sate Change >> set default nationality ...");
                 break;
         }
+
+        // This response is not mandatory for Pact state change. The only reason is the current Pact-JVM v4.0.4 does
+        // check the stateChange request's response, more exactly, checking the response's Content-Type, couldn't be
+        // null, so it MUST return something here.
+        PactStateChangeResponseDTO pactStateChangeResponse = new PactStateChangeResponseDTO();
+        pactStateChangeResponse.setState(body.getState());
+
+        return pactStateChangeResponse;
     }
 }
 ```
@@ -738,16 +749,15 @@ them is the expectation for `.nationality` and the Provider State we set in `.gi
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class NationalityPactTest {
-    PactSpecVersion pactSpecVersion;
 
     @Autowired
     ProviderService providerService;
 
     private void checkResult(PactVerificationResult result) {
         if (result instanceof PactVerificationResult.Error) {
-            throw new RuntimeException(((PactVerificationResult.Error)result).getError());
+            throw new RuntimeException(((PactVerificationResult.Error) result).getError());
         }
-        assertEquals(PactVerificationResult.Ok.INSTANCE, result);
+        assertThat(result, is(instanceOf(PactVerificationResult.Ok.class)));
     }
 
     @Test
@@ -757,7 +767,7 @@ public class NationalityPactTest {
 
         DslPart body = newJsonBody((root) -> {
             root.numberType("salary");
-            root.stringValue("fullName", "Takamachi Nanoha");
+            root.stringValue("name", "Takamachi Nanoha");
             root.stringValue("nationality", "Japan");
             root.object("contact", (contactObject) -> {
                 contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
@@ -766,25 +776,26 @@ public class NationalityPactTest {
         }).build();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("ConsumerNanohaWithNationality")
-            .hasPactWith("ExampleProvider")
-            .given("")
-            .uponReceiving("Query fullName is Nanoha")
+                .consumer("ConsumerNanohaWithNationality")
+                .hasPactWith("ExampleProvider")
+                .given("")
+                .uponReceiving("Query name is Nanoha")
                 .path("/information")
-                .query("fullName=Nanoha")
+                .query("name=Nanoha")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body(body)
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        MockProviderConfig config = MockProviderConfig.createDefault(PactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl());
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
             assertEquals(information.getNationality(), "Japan");
+            return null;
         });
 
         checkResult(result);
@@ -797,7 +808,7 @@ public class NationalityPactTest {
 
         DslPart body = newJsonBody((root) -> {
             root.numberType("salary");
-            root.stringValue("fullName", "Takamachi Nanoha");
+            root.stringValue("name", "Takamachi Nanoha");
             root.stringValue("nationality", null);
             root.object("contact", (contactObject) -> {
                 contactObject.stringMatcher("Email", ".*@ariman.com", "takamachi.nanoha@ariman.com");
@@ -806,25 +817,26 @@ public class NationalityPactTest {
         }).build();
 
         RequestResponsePact pact = ConsumerPactBuilder
-            .consumer("ConsumerNanohaNoNationality")
-            .hasPactWith("ExampleProvider")
-            .given("No nationality")
-            .uponReceiving("Query fullName is Nanoha")
+                .consumer("ConsumerNanohaNoNationality")
+                .hasPactWith("ExampleProvider")
+                .given("No nationality")
+                .uponReceiving("Query name is Nanoha")
                 .path("/information")
-                .query("fullName=Nanoha")
+                .query("name=Nanoha")
                 .method("GET")
-            .willRespondWith()
+                .willRespondWith()
                 .headers(headers)
                 .status(200)
                 .body(body)
-            .toPact();
+                .toPact();
 
-        MockProviderConfig config = MockProviderConfig.createDefault(this.pactSpecVersion.V3);
-        PactVerificationResult result = runConsumerTest(pact, config, mockServer -> {
+        MockProviderConfig config = MockProviderConfig.createDefault(PactSpecVersion.V3);
+        PactVerificationResult result = runConsumerTest(pact, config, (mockServer, context) -> {
             providerService.setBackendURL(mockServer.getUrl());
             Information information = providerService.getInformation();
             assertEquals(information.getName(), "Takamachi Nanoha");
-            assertEquals(information.getNationality(), null);
+            assertNull(information.getNationality());
+            return null;
         });
 
         checkResult(result);
@@ -849,8 +861,7 @@ Provider application is already started when you ran test with Miku, please kill
 is:
 
 ```commandline
-export SPRING_PROFILES_ACTIVE=pact
-./gradlew :example-provider:bootRun
+SPRING_PROFILES_ACTIVE=pact ./gradlew :example-provider:bootRun
 ```
 
 #### 4.3.2. update Gradle configuration
@@ -921,21 +932,23 @@ Restart your Provider application and run the test again, you can get the test f
 ```commandline
 ...
 
-Verifying a pact between Nanoha - No Nantionality and ExampleProvider
-  [Using File /Users/ariman/Workspace/Pacting/pact-jvm-example/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json]
-  Given No nationality
+Verifying a pact between Nanoha - With Nantionality and ExampleProvider
+  [Using File /Users/Biao/Workspace/Pacting/Pact-JVM-Example/Pacts/Nanoha/ConsumerNanohaWithNationality-ExampleProvider.json]
+  Given
+         WARNING: State Change ignored as there is no stateChange URL
   Query name is Nanoha
     returns a response which
       has status code 200 (OK)
-      includes headers
-        "Content-Type" with value "application/json;charset=UTF-8" (OK)
       has a matching body (FAILED)
 
 Failures:
 
-0) Verifying a pact between Miku - Base contract and ExampleProvider - Pact JVM example Pact interactionVerifying a pact between Miku - Base contract and ExampleProvider - Pact JVM example Pact interaction Given  returns a response which has a matching body
-      $.name -> Expected 'Hatsune Miku' but received null
+0) Verifying a pact between Nanoha - With Nantionality and ExampleProvider - Query name is Nanoha  Given  returns a response which has a matching body
+      Verifying a pact between Nanoha - With Nantionality and ExampleProvider - Query name is Nanoha  Given  returns a response which has a matching body=BodyComparisonResult(mismatches={$.nationality=[BodyMismatch(expected="Japan", actual=null, mismatch=Expected "Japan" but received null, path=$.nationality, diff=null)], $.name=[BodyMismatch(expected="Takamachi Nanoha", actual=null, mismatch=Expected "Takamachi Nanoha" but received null, path=$.name, diff=null)]}, diff=[{, -  "nationality": "Japan",, +  "salary": 80000,, +  "name": null,, +  "nationality": null,,   "contact": {,     "Phone Number": "9090940", -  },, -  "name": "Takamachi Nanoha",, -  "salary": 294875537, +  }, }])
 
 ...
-
 ```
+
+## 6. Contribution
+I'm not always tracking this example repository with the latest Pact-JVM version, so if you find there is new Pact-JVM released, and you'd like to put it
+into this example, any PR is welcome.

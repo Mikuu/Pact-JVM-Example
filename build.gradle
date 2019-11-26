@@ -117,6 +117,7 @@ project(':example-provider') {
 //                    stateChangeUrl = new URL('http://localhost:8080/pactStateChange')
 //                    pactSource = file("$rootDir/Pacts/Nanoha/ConsumerNanohaNoNationality-ExampleProvider.json")
 //                }
+
             }
         }
     }

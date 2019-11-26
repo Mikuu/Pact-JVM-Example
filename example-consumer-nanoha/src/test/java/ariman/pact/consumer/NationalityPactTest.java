@@ -116,5 +116,4 @@ public class NationalityPactTest {
 
         checkResult(result);
     }
-
 }
