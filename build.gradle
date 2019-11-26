@@ -25,13 +25,13 @@ subprojects {
   targetCompatibility = 1.8
 
   dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile("org.springframework.boot:spring-boot-devtools")
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile("junit:junit")
-    testCompile("au.com.dius:pact-jvm-consumer-junit:4.0.3")
-    testCompile("au.com.dius:pact-jvm-consumer-java8:4.0.3")
+      implementation("org.springframework.boot:spring-boot-starter-web")
+      implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+      implementation("org.springframework.boot:spring-boot-devtools")
+      testImplementation('org.springframework.boot:spring-boot-starter-test')
+      testImplementation("junit:junit")
+      testImplementation("au.com.dius:pact-jvm-consumer-junit:4.0.3")
+      testImplementation("au.com.dius:pact-jvm-consumer-java8:4.0.3")
   }
 
 }
@@ -41,8 +41,8 @@ project(':example-consumer-miku') {
     apply plugin: 'au.com.dius.pact'
 
     jar {
-        baseName = 'example-consumer-miku'
-        version =  '1.0.0'
+        archiveBaseName = 'example-consumer-miku'
+        archiveVersion =  '1.0.0'
     }
 
     test {
@@ -63,11 +63,10 @@ project(':example-consumer-miku') {
     }
 }
 
-
 project(':example-consumer-nanoha') {
     jar {
-        baseName = 'example-consumer-nanoha'
-        version =  '1.0.0'
+        archiveBaseName = 'example-consumer-nanoha'
+        archiveVersion =  '1.0.0'
     }
 
     test {
@@ -81,8 +80,8 @@ project(':example-provider') {
     apply plugin: 'au.com.dius.pact'
 
     jar {
-        baseName = 'example-provider'
-        version =  '1.0.0'
+        archiveBaseName = 'example-provider'
+        archiveVersion =  '1.0.0'
     }
 
     pact {
